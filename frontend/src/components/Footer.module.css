@@ -1,0 +1,51 @@
+.footer {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 60px 0 20px 0;
+    border-top: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.footerTitle {
+    color: #dc3545;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+.footerList {
+    list-style: none;
+    padding: 0;
+}
+
+.footerListItem {
+    margin-bottom: 12px;
+    color: #aaaaaa;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.footerLink {
+    color: #aaaaaa;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block; /* Fontos az animációhoz */
+}
+
+.footerLink:hover {
+    color: #dc3545;
+    transform: scale(1.05); /* Elmozdulás helyett enyhe nagyítás a szimmetria megőrzéséért */
+}
+
+.vonal {
+    border-color: rgba(220, 53, 69, 0.2);
+    margin: 40px 0 20px 0;
+}
+
+.copyrightText {
+    color: #666666;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}

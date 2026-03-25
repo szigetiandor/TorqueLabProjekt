@@ -1,0 +1,111 @@
+.authWrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
+  padding: 20px;
+}
+
+.authCard {
+  background: #111111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.authCard:hover {
+  border-color: #dc3545;
+  box-shadow: 0 0 20px rgba(220, 53, 69, 0.15);
+}
+
+.title {
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 30px;
+}
+
+.inputGroup {
+  margin-bottom: 20px;
+}
+
+.inputGroup label {
+  color: #888;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.customInput {
+  background: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  color: white !important;
+  padding: 12px 15px !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.customInput:focus {
+  background: #222 !important;
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 8px rgba(220, 53, 69, 0.3) !important;
+  outline: none;
+}
+
+.submitBtn {
+  background: #dc3545;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.submitBtn:hover {
+  background: #b02a37;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+}
+
+.switchText {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 25px;
+  text-align: center;
+}
+
+.link {
+  color: #dc3545;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.errorAlert {
+  background-color: rgba(220, 53, 69, 0.1);
+  border: none;
+  border-left: 4px solid #dc3545;
+  color: #ff4d5e;
+  font-size: 0.85rem;
+  padding: 12px;
+  margin-bottom: 20px;
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  60% { transform: translateX(5px); }
+}

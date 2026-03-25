@@ -1,0 +1,38 @@
+
+.filterContainer {
+    background: #0d0d0d;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #1a1a1a;
+    margin-bottom: 40px;
+}
+
+.label {
+    display: block;
+    color: #666;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.select {
+    width: 100%;
+    background: #151515;
+    border: 1px solid #222;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.select:focus {
+    border-color: #dc3545;
+}
+
+
+.select option {
+    background: #0d0d0d;
+}

@@ -1,0 +1,45 @@
+
+.mainWrapper {
+    background-color: #0b0b0b; 
+    color: #e0e0e0;
+}
+
+.heroSection {
+    background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);
+    border-bottom: 2px solid #dc3545; 
+}
+
+.darkCard {
+    background-color: #161616 !important;
+    border: 1px solid #2a2a2a !important;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.darkCard:hover {
+    transform: translateY(-10px);
+    border-color: #dc3545 !important; 
+}
+
+.graySection {
+    background-color: #121212 !important;
+}
+
+.textGray {
+    color: #999 !important;
+}
+
+.btnDangerCustom {
+    background-color: #dc3545;
+    border: none;
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.3);
+    transition: 0.3s;
+}
+
+.btnDangerCustom:hover {
+    background-color: #b02a37;
+    box-shadow: 0 0 25px rgba(220, 53, 69, 0.5);
+}
+
+.iconGlow {
+    filter: drop-shadow(0 0 8px rgba(220, 53, 69, 0.4));
+}

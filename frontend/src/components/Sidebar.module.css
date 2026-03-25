@@ -1,0 +1,81 @@
+.sidebar {
+    background-color: #0c0c0c;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    border-radius: 15px;
+    padding: 25px;
+    position: sticky;
+    top: 120px; 
+}
+
+.filterTitle {
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #dc3545;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.filterGroup {
+    margin-bottom: 35px;
+}
+
+.selectInput {
+    background-color: #151515;
+    border: 1px solid #333;
+    color: white;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    outline: none;
+}
+/*Árcsúszka*/
+.priceRange {
+    width: 100%;
+    accent-color: #dc3545; 
+    cursor: pointer;
+}
+
+.priceLabel {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-top: 10px;
+}
+
+.resetBtn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    padding: 12px;
+    border-radius: 50px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    transition: 0.3s;
+}
+
+.resetBtn:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+.carSelectorBox {
+    background: rgba(220, 53, 69, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px dashed rgba(220, 53, 69, 0.3);
+}
+
+.selectInput optgroup {
+    background-color: #000;
+    color: #dc3545;
+    font-weight: bold;
+    font-style: normal;
+}
+
+.selectInput option {
+    background-color: #111;
+    color: #fff;
+}

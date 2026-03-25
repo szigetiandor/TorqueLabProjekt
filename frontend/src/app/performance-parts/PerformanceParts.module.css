@@ -1,0 +1,30 @@
+.mainWrapper {
+    background-color: #000;
+    min-height: 100vh;
+    padding-top: 140px;
+    padding-bottom: 100px;
+}
+
+.headerBox {
+    margin-bottom: 40px;
+    border-bottom: 1px solid #1a1a1a;
+    padding-bottom: 20px;
+}
+
+.pageTitle {
+    font-weight: 900;
+    text-transform: uppercase;
+    font-style: italic;
+    font-size: 3rem;
+    letter-spacing: -1px;
+    margin-bottom: 5px;
+}
+
+@media (max-width: 768px) {
+    .pageTitle {
+        font-size: 2rem;
+    }
+    .mainWrapper {
+        padding-top: 100px;
+    }
+}
