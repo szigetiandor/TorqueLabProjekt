@@ -1,0 +1,24 @@
+const express = require("express")
+const cookieParser = require("cookie-parser")
+
+const cors = require("cors") // bocsi ,de elv kell a cors hogy be tudjak logolni
+
+const app = express()
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL, //localhost 3000
+  credentials: true,               // süti kérés/fogadás true
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(express.json())
+app.use(cookieParser())
+app.use('/api/users', require("./routes/user.routes"))
+app.use('/api/cars', require("./routes/car.routes"))
+app.use('/api/service-logs', require("./routes/serviceLog.routes"))
+app.use('/api/parts', require("./routes/part.routes"))
+app.use('/api/service-parts', require("./routes/servicePart.routes"))
+app.use('/api/auth', require("./routes/auth.routes"))
+
+module.exports = app
