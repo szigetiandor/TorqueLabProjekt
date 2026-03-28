@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './globals.css';
 import BootstrapClient from '@/components/BootstrapClient';
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: 'TorqueLab',
@@ -22,6 +23,7 @@ export default function RootLayout({
         <Header />
         <main>{children}</main>
         <Footer />
+                    <Script src="/bootstrap.bundle.min.js" strategy="afterInteractive" />
       </body>
     </html>
   );

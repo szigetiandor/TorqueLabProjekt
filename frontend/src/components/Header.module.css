@@ -1,5 +1,7 @@
 .headerWrapper {
     z-index: 1050;
+    position: relative;
+    height: 80px;
 }
 
 .navbarCustom {
@@ -9,7 +11,30 @@
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.9);
 }
 
-/* LOGO STÍLUS */
+.menuWrapper {
+    display: none;
+    width: 100%;
+}
+
+.menuWrapper.open {
+    display: block;
+    background-color: #000;
+    padding: 20px;
+    margin-top: 15px;
+    border: 1px solid #222;
+    border-radius: 10px;
+}
+
+@media (min-width: 992px) {
+    .menuWrapper {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        width: auto;
+        flex-grow: 1;
+    }
+}
+
 .logoBox {
     width: 42px;
     height: 42px;
@@ -35,54 +60,58 @@
     font-weight: 600;
     font-size: 13px;
     color: #cccccc !important;
-    transition: 0.3s;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 8px 15px; 
+    display: flex;
+    align-items: center;
+    font-family: inherit;
+    line-height: 1.2;
+    margin: 0;
+    cursor: pointer;
 }
 
 .navLinkCustom:hover {
     color: #dc3545 !important;
+    text-shadow: 0 0 8px rgba(220, 53, 69, 0.4);
 }
 
-/* MEGA MENU LOGIKA */
+/* DROPDOWN LOGIKA - CSAK KATTINTÁSRA */
 .dropdownContainer {
-    position: static !important; /* Szükséges a teljes szélességű dropdown-hoz */
-}
-
-@media (min-width: 992px) {
-    /* Engedélyezzük a fő "Parts" felirat kattinthatóságát */
-    .dropdownToggle {
-        pointer-events: auto !important;
-    }
-
-    .dropdownContainer:hover > .dropdownMenuCustom {
-        display: block;
-        animation: slideFadeIn 0.3s ease-out;
-    }
-}
-
-@keyframes slideFadeIn {
-    from { opacity: 0; transform: translate(-50%, 15px); }
-    to { opacity: 1; transform: translate(-50%, 0); }
+    position: static !important;
+    display: flex;
+    align-items: center;
 }
 
 .dropdownMenuCustom {
     background-color: #0a0a0a !important;
     border: 1px solid rgba(220, 53, 69, 0.8) !important;
-    border-top: none !important;
     border-radius: 0 0 15px 15px;
     padding: 40px 0;
-    
     width: 95%;
     max-width: 1200px;
     left: 50% !important;
-    transform: translateX(-50%) !important;
-    
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 1);
-    display: none;
+    transform: translateX(-50%);
+    display: none; /* Alapból rejtve */
+    position: absolute;
     top: 100%;
-    margin: 0 !important;
+    z-index: 1000;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.8);
 }
 
-/* DROPDOWN TARTALOM */
+/* Ez az osztály vezérli a láthatóságot, amit a React rak rá */
+.dropdownMenuCustom.show {
+    display: block;
+    animation: slideFadeIn 0.2s ease-out;
+}
+
+@keyframes slideFadeIn {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
 .columnTitle {
     color: #dc3545;
     font-size: 0.9rem;
@@ -90,51 +119,31 @@
     text-transform: uppercase;
     margin-bottom: 25px;
     display: block;
-    letter-spacing: 2px;
 }
 
 .dropdownItemCustom {
     color: #ffffff !important;
-    padding: 12px 15px;
-    border-radius: 8px;
-    transition: 0.3s;
+    padding: 10px;
+    text-decoration: none;
     display: flex;
     flex-direction: column;
-    text-decoration: none;
-    border-left: 3px solid transparent;
+    transition: 0.2s;
 }
 
 .dropdownItemCustom:hover {
-    background-color: rgba(220, 53, 69, 0.1) !important;
+    background-color: rgba(220, 53, 69, 0.1);
     color: #dc3545 !important;
-    padding-left: 25px;
-    border-left: 3px solid #dc3545;
+    padding-left: 15px;
 }
 
-.itemSubtitle {
-    font-size: 0.75rem;
-    color: #666;
-    font-weight: 400;
-    margin-top: 4px;
-}
-
-/* MOBIL NÉZET */
 @media (max-width: 991px) {
     .dropdownMenuCustom {
+        position: relative !important;
         width: 100%;
         left: 0 !important;
         transform: none !important;
-        position: relative !important;
-        padding: 20px;
-        border-radius: 0;
+        padding: 20px 10px;
         border: none !important;
-    }
-
-    .collapseCustom {
-        background-color: #000;
-        padding: 20px;
-        margin-top: 15px;
-        border: 1px solid #222;
-        border-radius: 10px;
+        background-color: transparent !important;
     }
 }
