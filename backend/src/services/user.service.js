@@ -2,13 +2,15 @@ const userModel = require('../models/user.model');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-exports.createUser = async ({ name, email, password }) => {
+exports.createUser = async ({ name, email, password, is_admin }) => {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds)
-    //console.log(passwordHash)
-    const user = new userModel.User({ name, email, password_hash: passwordHash, is_admin: false })
-    //console.log("in user service:")
-    //console.log(user)
+    const user = new userModel.User({ 
+        name, 
+        email, 
+        password_hash: passwordHash, 
+        is_admin: is_admin || false 
+    })
     return await userModel.create(user);
 }
 
@@ -21,10 +23,32 @@ exports.getUserById = async (id) => {
 }
 
 exports.updateUser = async (id, data) => {
-    const {name, email, password} = data
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds)
-    return await userModel.update(id, new userModel.User({name, email, password_hash: passwordHash, is_admin: false}));
+    const { name, email, password, is_admin } = data
+    
+    // 1. Megkeressük a meglévő felhasználót
+    const existingUser = await userModel.findById(id);
+    if (!existingUser) return null;
+
+    // 2. Jelszó kezelése: csak ha küldtek újat, akkor titkosítunk
+    let finalHash = existingUser._password_hash;
+    if (password && password.trim() !== "") {
+        const saltRounds = 10;
+        finalHash = await bcrypt.hash(password, saltRounds);
+    }
+
+    // 3. Admin jog kezelése: ha a data-ban nincs benne (undefined), marad a régi
+    const finalAdminStatus = (is_admin !== undefined) ? is_admin : existingUser.is_admin;
+
+    // 4. Frissítés az új model példánnyal
+    const updatedUserObj = new userModel.User({
+        user_id: id,
+        name: name || existingUser.name,
+        email: email || existingUser.email,
+        password_hash: finalHash,
+        is_admin: finalAdminStatus
+    });
+
+    return await userModel.update(id, updatedUserObj);
 }
 
 exports.deleteUser = async (id) => {
@@ -33,34 +57,14 @@ exports.deleteUser = async (id) => {
 
 exports.loginUser = async (email, password) => {
     const user = await userModel.findByEmail(email)
-
-    if (!user) {
-        return null
-    }
-
-    //console.log(password)
-    //console.log(user._password_hash)
-    //console.log(bcrypt.compare(password, user._password_hash))
-
+    if (!user) return null
     const isPasswordCorrect = await bcrypt.compare(password, user._password_hash)
-
-    if (!isPasswordCorrect) {
-        return null
-    }
+    if (!isPasswordCorrect) return null
 
     const token = jwt.sign(
         user.toJSON(), 
         process.env.JWT_SECRET,
-        {expiresIn: '24h'}
+        { expiresIn: '24h' }
     )
-
-    return {user, token}
-}
-
-exports.becomeAdmin = async (id, adminSecret) => {
-    if (adminSecret !== process.env.ADMIN_SECRET) {
-        return null
-    }
-
-    return await userModel.makeAdmin(id)
+    return { user, token }
 }

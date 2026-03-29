@@ -16,7 +16,6 @@ exports.verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     req.user = decoded
-    console.log(decoded)
     next()
   }
   catch (err) {
@@ -30,7 +29,8 @@ exports.verifyAdmin = (req, res, next) => {
     return res.status(401).json({ error: 'unauthorized, login required' })
   }
 
-  if (!req.user.isAdmin) {
+  // JAVÍTÁS: Itt is_admin-t kell nézni, mert a JWT-dben ez a kulcs!
+  if (!req.user.is_admin) {
     return res.status(401).json({error: 'unauthorized, admin access required'})
   }
 

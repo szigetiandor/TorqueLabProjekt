@@ -3,19 +3,16 @@ const userService = require('../services/user.service')
 exports.login = async (req, res) => {
   try {
     const {email, password } = req.body
-
     if (!email || !password) {
       return res.status(400).json({error: 'email and password are required'})
     }
 
     const result = await userService.loginUser(email, password)
-    
     if (!result) {
       return res.status(404).json({error: 'user not found'})
     }
 
     const {user, token} = result
-
     if (!token || !user) {
       return res.status(401).json({error: 'invalid credentials'})
     }
@@ -61,15 +58,25 @@ exports.becomeAdmin = async (req, res) => {
   try {
     const {adminSecret} = req.body
     const user = await userService.becomeAdmin(req.user.userId, adminSecret)
-    
     if (!user) {
       return res.status(404).json({error: 'user not found'})
     }
-
     res.status(200).json({success: true, user})
   }
   catch (err) {
     console.error(err)
     res.status(500).json({error: err.message})
   }
+}
+
+
+// ÚJ: Kijelentkezés logika
+exports.logout = (req, res) => {
+  res.clearCookie('token', {
+    path: '/',
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production'
+  });
+  return res.status(200).json({ message: 'Logged out successfully' });
 }

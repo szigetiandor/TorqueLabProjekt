@@ -9,5 +9,6 @@ router.post("/register", userController.createUser)
 router.post("/verify-login", authMiddleware.verifyToken, authController.verifyLogin)
 router.post("/verify-admin", authMiddleware.verifyToken, authMiddleware.verifyAdmin, authController.verifyAdmin)
 router.post("/become-admin", authMiddleware.verifyToken, authController.becomeAdmin)
+router.post("/logout", authController.logout);
 
 module.exports = router;
