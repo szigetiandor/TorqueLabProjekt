@@ -10,7 +10,8 @@ async function getMe() {
   if (!token) return null;
 
   try {
-    const res = await fetch(API_URL, {
+    // A verify-login végpontot hívjuk meg a hitelesítéshez
+    const res = await fetch(`${API_URL}/auth/verify-login`, {
       method: 'POST', 
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -21,8 +22,13 @@ async function getMe() {
 
     if (!res.ok) return null;
     const data = await res.json();
+    
+    // Debug: Nézd meg a terminált futtatás közben, itt látod majd az adatokat!
+    console.log("Bejelentkezett felhasználó a Headerben:", data.user);
+    
     return data.user; 
   } catch (error) {
+    console.error("Header hiba:", error);
     return null;
   }
 }

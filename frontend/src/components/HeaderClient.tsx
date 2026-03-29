@@ -12,10 +12,22 @@ export default function HeaderClient({ user }: { user: any }) {
 
   const handleLogout = async () => {
     try {
+      // Megpróbáljuk a szerver oldali logout-ot is (ha van cookie/session)
       await fetch(`${API_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
+      
+      // Töröljük a tokent a kliens oldalról is (biztonság kedvéért, ha oda mentetted)
+      localStorage.removeItem('token'); 
+      
       setIsOpen(false);
-      router.refresh();
-    } catch (err) { console.error(err); }
+      
+      // A router.push helyett teljes újratöltést használunk a kezdőlapra:
+      // Ez kisöpri a React state-et és a "Szia, Admin" feliratot is.
+      window.location.href = '/'; 
+    } catch (err) { 
+      console.error("Logout hiba:", err);
+      // Ha a hálózati hiba ellenére ki akarunk lépni:
+      window.location.href = '/';
+    }
   };
 
   const closeMenu = () => { 
@@ -23,7 +35,6 @@ export default function HeaderClient({ user }: { user: any }) {
     setIsDropdownOpen(false); 
   };
 
-  // Külön kezelő a dropdownhoz, hogy megakadályozzuk az esetleges buborékolást
   const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsDropdownOpen(!isDropdownOpen);
@@ -45,54 +56,34 @@ export default function HeaderClient({ user }: { user: any }) {
 
           <div className={`${styles.menuWrapper} ${isOpen ? styles.open : ''}`}>
             <ul className="navbar-nav mx-auto align-items-lg-center">
-              <li className="nav-item px-lg-2">
-                <Link className={styles.navLinkCustom} href="/" onClick={closeMenu}>Főoldal</Link>
-              </li>
-              <li className="nav-item px-lg-2">
-                <Link className={styles.navLinkCustom} href="/service" onClick={closeMenu}>Szervíz</Link>
-              </li>
-              <li className="nav-item px-lg-2">
-                <Link className={styles.navLinkCustom} href="/catalog" onClick={closeMenu}>Katalógus</Link>
-              </li>
+              <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/" onClick={closeMenu}>Főoldal</Link></li>
+              <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/service" onClick={closeMenu}>Szervíz</Link></li>
+              <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/catalog" onClick={closeMenu}>Katalógus</Link></li>
 
               <li className={`nav-item dropdown px-lg-2 ${styles.dropdownContainer}`}>
-                <button 
-                  className={styles.navLinkCustom}
-                  onClick={toggleDropdown}
-                  type="button"
-                >
+                <button className={styles.navLinkCustom} onClick={toggleDropdown} type="button">
                   <span className="text-danger">Alkatrészek</span>
                   <span className={`ms-1 text-danger transition-all ${isDropdownOpen ? 'rotate-180' : ''}`} style={{ fontSize: '9px' }}>
                     {isDropdownOpen ? '▲' : '▼'}
                   </span>
                 </button>
-                
                 <div className={`${styles.dropdownMenuCustom} ${isDropdownOpen ? styles.show : ''}`}>
                   <div className="container">
                     <div className="row g-4">
                       <div className="col-md-6 border-end border-secondary border-opacity-25">
                         <span className={styles.columnTitle}>SportAlkatrészek</span>
-                        <Link className={styles.dropdownItemCustom} href="/performance-parts?category=all" onClick={closeMenu}>
-                          <span className="fw-bold">ÖSSZES TERMÉK</span>
-                        </Link>
-                        <Link className={styles.dropdownItemCustom} href="/performance-parts?category=engine" onClick={closeMenu}>
-                          <span className="fw-bold">MOTOR TUNING</span>
-                        </Link>
+                        <Link className={styles.dropdownItemCustom} href="/performance-parts?category=all" onClick={closeMenu}><span className="fw-bold">ÖSSZES TERMÉK</span></Link>
+                        <Link className={styles.dropdownItemCustom} href="/performance-parts?category=engine" onClick={closeMenu}><span className="fw-bold">MOTOR TUNING</span></Link>
                       </div>
                       <div className="col-md-6 ps-md-5">
                         <span className={styles.columnTitle}>Futómű & Kezelés</span>
-                        <Link className={styles.dropdownItemCustom} href="/performance-parts?category=suspension" onClick={closeMenu}>
-                          <span className="fw-bold">Felfüggesztés</span>
-                        </Link>
+                        <Link className={styles.dropdownItemCustom} href="/performance-parts?category=suspension" onClick={closeMenu}><span className="fw-bold">Felfüggesztés</span></Link>
                       </div>
                     </div>
                   </div>
                 </div>
               </li>
-
-              <li className="nav-item px-lg-2">
-                <Link className={styles.navLinkCustom} href="/aboutus" onClick={closeMenu}>Rólunk</Link>
-              </li>
+              <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/aboutus" onClick={closeMenu}>Rólunk</Link></li>
             </ul>
 
             <div className="d-flex flex-column flex-lg-row align-items-center gap-2 me-lg-4 mt-3 mt-lg-0">
@@ -103,6 +94,18 @@ export default function HeaderClient({ user }: { user: any }) {
                 </>
               ) : (
                 <div className="d-flex align-items-center gap-3">
+                  
+                  {/* ADMIN GOMB ELLENŐRZÉS */}
+                  {(user.isAdmin || user.is_admin || user.isAdmin === 1 || user.is_admin === 1) && (
+                    <Link 
+                      href="/admin/dashboard" 
+                      className="btn btn-danger btn-sm px-3 fw-bold rounded-pill shadow-sm" 
+                      onClick={closeMenu}
+                    >
+                      DASHBOARD
+                    </Link>
+                  )}
+
                   <span className="text-white small">Üdv, <b>{user.name || user.username}</b></span>
                   <button onClick={handleLogout} className="btn btn-outline-secondary btn-sm px-3 rounded-pill fw-bold">Kijelentkezés</button>
                 </div>
