@@ -20,5 +20,7 @@ app.use('/api/service-logs', require("./routes/serviceLog.routes"))
 app.use('/api/parts', require("./routes/part.routes"))
 app.use('/api/service-parts', require("./routes/servicePart.routes"))
 app.use('/api/auth', require("./routes/auth.routes"))
+app.use('/api/service-comments', require('./routes/serviceComment.routes'))
+app.use('/api/images', require('./routes/image.routes'))
 
 module.exports = app
