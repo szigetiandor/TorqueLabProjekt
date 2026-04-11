@@ -37,9 +37,10 @@ export default function Home() {
               </div>
             </div>
             <div className="col-lg-6 ps-lg-5 text-white">
-              <h2 className="display-5 fw-bold mb-4">A teljesítmény éltet</h2>
+              <h2 className="display-5 fw-bold mb-4">Hozd ki a legtöbbet autódból</h2>
               <p className={`${styles.textGray} fs-5 mb-4`}>
-                Csapatunk több mint 10 éve foglalkozik utcai és versenyautók építésével, tunningolásával.
+                Csapatunk fordokra specializálódott s több mint 20 éves szerelési tapasztalattal rendelkezik.
+                Több mint 10 éve pedig utcai és versenyautók építésében, tunningolásában jártas.
               </p>
               <ul className="list-unstyled mb-5">
                 <li className="mb-3"><strong className="text-danger">✓</strong> Professzionális diagnosztikai eszközök</li>
@@ -67,7 +68,7 @@ export default function Home() {
             {[
               { 
                 icon: '🛒', 
-                title: 'Tuning Shop', 
+                title: 'Minőségi alkatrészek', 
                 text: 'Böngéssz prémium alkatrészeink széles kínálatában.', 
                 link: '/performance-parts' 
               },

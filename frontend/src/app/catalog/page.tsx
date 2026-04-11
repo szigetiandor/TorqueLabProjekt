@@ -27,10 +27,10 @@ export default async function CatalogPage() {
         
         <section className={styles.headerSection}>
           <h1 className={styles.title}>
-            Exkluzív <span className={styles.accent}>Ford Építések</span>
+             Egyedi Autóink,<span className={styles.accent}>Valódi Teljesítmény</span>
           </h1>
           <p className={styles.subtitle}>
-            Egyedi teljesítményű Ford modellek a TorqueLab műhelyéből
+            Erő. Egyediség. A TorqueLab csapatának ajánlásával
           </p>
         </section>
 
