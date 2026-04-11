@@ -11,8 +11,8 @@ export default function AboutPage() {
     <main className={styles.aboutMain}>
       <section className={styles.hero}>
         <div className="container text-center">
-          <h1 className={styles.glitchText}>A TELJESÍTMÉNY ÉLTET</h1>
-          <p className="lead text-white-50">A Ford-rajongók és a tuning megszállottjainak találkozóhelye.</p>
+          <h1 className={styles.glitchText}> Ahol a fém életre kel</h1>
+          <p className="lead text-white-50">Két jóbarát valóra vált álma.</p>
         </div>
       </section>
 
@@ -23,15 +23,15 @@ export default function AboutPage() {
             <h2 className={styles.sectionTitle}>Utunk <span className="text-danger">Története</span></h2>
             <div className={styles.storyContent}>
                 <p className="text-secondary">
-                  A TorqueLab több mint egy egyszerű műhely – ez egy közösség. 2020-ban 
-                  azzal az egyetlen céllal alapítottuk, hogy a Ford tulajdonosok számára 
-                  kompromisszummentes teljesítménynövelő megoldásokat és professzionális 
-                  szakértelmet biztosítsunk.
+                  Számunkra a motorhang nem zaj, a benzingőz pedig nem szag, a gyári teljesítmény pedig nem egy kőbe vésett szabály, csupán egy udvarias ajánlás.
+                </p>
+                <p>
+                  Két barát, egy akna, és több mint 20 év olajsár a körmök alatt - Üdv a TorqueLab-ben.
                 </p>
                 <p className="text-secondary">
-                  Mára az iparág vezető gyártóival dolgozunk együtt. Egyedi kalibrációinkkal 
-                  és csúcskategóriás alkatrészeinkkel a maximumot hozzuk ki a Focus RS, ST 
-                  és Mustang modellekből.
+                   Mi nem csak autókat szerelünk. Mi karaktert építünk, határokat feszegetünk, és kihozzuk a vasból azt a potenciált, amit a gyári mérnökök a költségvetési osztály nyomására kénytelenek voltak elrejteni.
+
+                  Hisszük, hogy a tuning nem a hangos kipufogóknál és az utólag rácsavarozott műanyag szárnyaknál kezdődik. A valódi teljesítménynövelés a precizitásról, az átgondolt mérnöki munkáról és a tökéletes harmóniáról szól – legyen szó egy utcai sleeperről, egy pályanapokra épített fenevadról, vagy egy megbízható, de izmosított mindennapos harcosról. A fizika törvényeit nem tudjuk átírni, de piszkosul szeretjük meghajlítani őket.
                 </p>
             </div>
           </div>

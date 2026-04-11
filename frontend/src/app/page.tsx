@@ -9,14 +9,14 @@ export default function Home() {
       <section className={`${styles.heroSection} py-5 position-relative shadow-lg`}>
         <div className="container py-5 text-center">
           <h1 className="display-1 fw-bold text-uppercase italic text-white">
-            Tuning <span className="text-danger">Master</span>
+            Torque <span className="text-danger">Lab</span>
           </h1>
           <p className="lead fs-3 mb-5 text-secondary">
-            Több mint szerviz. Életstílus.
+            Több mint szervíz. Életstílus.
           </p>
           <div className="d-flex justify-content-center gap-3">
             <Link href="/aboutus" className={`btn btn-lg px-5 ${styles.btnDangerCustom} text-white`}>
-              Kik vagyunk mi?
+              Ismerd meg csapatunkat!
             </Link>
           </div>
         </div>
@@ -39,12 +39,12 @@ export default function Home() {
             <div className="col-lg-6 ps-lg-5 text-white">
               <h2 className="display-5 fw-bold mb-4">A teljesítmény éltet</h2>
               <p className={`${styles.textGray} fs-5 mb-4`}>
-                Csapatunk több mint 10 éve foglalkozik utcai és versenyautók optimalizálásával.
+                Csapatunk több mint 10 éve foglalkozik utcai és versenyautók építésével, tunningolásával.
               </p>
               <ul className="list-unstyled mb-5">
                 <li className="mb-3"><strong className="text-danger">✓</strong> Professzionális diagnosztikai eszközök</li>
-                <li className="mb-3"><strong className="text-danger">✓</strong> Egyedi szoftveres megoldások</li>
-                <li className="mb-3"><strong className="text-danger">✓</strong> Minősített alkatrészek beépítése</li>
+                <li className="mb-3"><strong className="text-danger">✓</strong> Minőségi alkatrészek széles választékban</li>
+                <li className="mb-3"><strong className="text-danger">✓</strong> Szakértelem a felső fokon</li>
               </ul>
              
               <Link href="/aboutus" className="btn btn-outline-danger px-4 py-2">

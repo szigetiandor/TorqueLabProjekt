@@ -44,7 +44,7 @@ export default async function CatalogPage() {
                   product={{
                     part_id: car.car_id, // Az id-t ide tesszük, hogy a link jó legyen
                     name: `${car.brand} ${car.model}`,
-                    manufacturer: car.build_type.toUpperCase(),
+                    manufacturer: car.build_type,
                     part_number: car.vin,
                     price: car.price,
                     stock_quantity: 1, // Hogy ne írja ki: "Nincs készleten"
