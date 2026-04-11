@@ -10,10 +10,51 @@
     height: 60vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('a123.jpeg') no-repeat;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('e123.webp') no-repeat;
     background-size: cover;
     background-position: center;
     border-bottom: 2px solid #dc3545;
+}
+
+.kepegy {
+    background-image: url(a123.jpeg);
+     height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-weight: bold;
+    border: 1px dashed #444;
+    background-size: cover;
+    background-position: center;
+}
+
+
+
+.kepketto {
+    background-image: url(szepuma.png);
+     height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-weight: bold;
+    border: 1px dashed #444;
+    background-size: cover;
+    background-position: center;
+}
+
+.kepharom {
+    background-image: url(pumarally.jpg);
+     height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-weight: bold;
+    border: 1px dashed #444;
+    background-size: cover;
+    background-position: center;
 }
 
 

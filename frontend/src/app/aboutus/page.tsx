@@ -46,9 +46,7 @@ export default function AboutPage() {
         </p>
         <br />
         <div className={styles.imageCard}>
-               <div className={styles.imagePlaceholder}>
-                <img src="/pics/a123.jpeg" alt="puma_elso" />
-              </div>
+               <div className={styles.kepegy}></div>
             </div>
         <br />
         <p className='text-secondary'>
@@ -58,13 +56,13 @@ export default function AboutPage() {
           Azokon a fagyos, hajnalba nyúló éjszakákon, a fűtetlen garázsban tanultuk meg a legfontosabb leckéket. Azon a Pumán próbáltuk ki az első saját építésű kipufogórendszerünket, azon kísérleteztünk és kerestük a motorhibát különböző módszerekkel, és azzal az autóval éltük át az első igazán komoly motorépítés izgalmát.
         </p>
         <div className={styles.imageCard}>
-               <div className={styles.imagePlaceholder}>szar puma</div>
+               <div className={` ${styles.kepketto}`}></div>
         </div>
         <p>
           A Puma ma már köszönőviszonyban sincs egykori önmagával. Kapott egy új sport kipufogórendszert, kikönnyítettük az utolsó dekáig, egy teljesen egyedi hajtáslánc van alatta, és jelenleg is aktív, tűzköpő rallyautóként riogatja a mezőnyt a helyi bajnokságokban. Ott áll a műhely sarkában, emlékeztetőül arra, hogy honnan jöttünk, és hogy kellő kitartással és szakértelemmel a legkisebb vasból is lehet aszfaltszaggató szörnyeteget építeni.
         </p>
         <div className={styles.imageCard}>
-               <div className={styles.imagePlaceholder}>pimped ai generalt rally puma</div>
+               <div className={styles.kepharom}></div>
         </div>
         <p>
           Van egy elképzelésed? Egy projekted, amihez hiányzik a szakértelem, vagy csak kihoznál még 50 lóerőt a blokkból?
