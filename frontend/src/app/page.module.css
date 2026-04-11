@@ -6,6 +6,7 @@
 
 .heroSection {
     background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);
+    background-size: cover; /* Vagy 'cover', attól függően, mekkora a logó */
     border-bottom: 2px solid #dc3545; 
 }
 

@@ -6,8 +6,15 @@ export default function Home() {
     <main className={styles.mainWrapper}>
 
       {/* HERO SECTION */}
+      {/*
       <section className={`${styles.heroSection} py-5 position-relative shadow-lg`}>
         <div className="container py-5 text-center">
+          <img 
+            src="logo.png" 
+            alt="TorqueLab"
+            className="mb-4"
+          />
+          {/*
           <h1 className="display-1 fw-bold text-uppercase italic text-white">
             Torque <span className="text-danger">Lab</span>
           </h1>
@@ -21,9 +28,16 @@ export default function Home() {
           </div>
         </div>
       </section>
+      */}
+      <img 
+            src="logo-sk.png" 
+            alt="TorqueLab"
+            className="mb-4"
+          />
 
       {/* RÓLUNK SZAKASZ */}
       <section className="py-5 bg-black">
+        
         <div className="container py-5">
           <div className="row align-items-center">
             <div className="col-lg-6 mb-5 mb-lg-0">
