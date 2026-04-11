@@ -23,7 +23,6 @@ export default function RootLayout({
         <Header />
         <main>{children}</main>
         <Footer />
-                    <Script src="/bootstrap.bundle.min.js" strategy="afterInteractive" />
       </body>
     </html>
   );

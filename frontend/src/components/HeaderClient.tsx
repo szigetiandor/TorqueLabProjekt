@@ -79,9 +79,6 @@ export default function HeaderClient({ user }: { user: any }) {
                         <Link className={styles.dropdownItemCustom} href="/performance-parts?car=Mustang" onClick={closeMenu}>
                           <span className="fw-bold">MUSTANG SPECIFIKUS</span>
                         </Link>
-                        <Link className={styles.dropdownItemCustom} href="/performance-parts?car=Fiesta" onClick={closeMenu}>
-                          <span className="fw-bold">FIESTA TUNING</span>
-                        </Link>
                       </div>
                     </div>
                   </div>
