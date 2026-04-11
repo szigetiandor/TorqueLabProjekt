@@ -2,8 +2,7 @@ import ProductCard from '@/components/ProductCard';
 import CarFilter from '@/components/CarFilter';
 import styles from './Catalog.module.css';
 
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 async function getCars() {
   try {
@@ -23,10 +22,9 @@ export default async function CatalogPage() {
   const cars = await getCars();
 
   return (
-    <main className={styles.catalogWrapper}>
+    <main className={styles.catalogWrapper} style={{ backgroundColor: '#000', minHeight: '100vh', paddingTop: '100px' }}>
       <div className="container py-5">
         
-        {/* Fejléc*/}
         <section className={styles.headerSection}>
           <h1 className={styles.title}>
             Exkluzív <span className={styles.accent}>Ford Építések</span>
@@ -38,22 +36,22 @@ export default async function CatalogPage() {
 
         <CarFilter />
 
-        {/* Autó Lista */}
         <div className={`row g-4 ${styles.gridContainer}`}>
           {cars.length > 0 ? (
             cars.map((car: any) => (
-              <div key={car.vin} className="col-md-6 col-lg-4">
+              <div key={car.car_id} className="col-md-6 col-lg-4">
                 <ProductCard 
-                    product={{
-                      id: car.vin,
-                      isCar: true, 
-                      title: `${car.brand} ${car.model}`,
-                      category: car.production_year.toString(),
-                      specs: `${car.engine} | ${car.mileage.toLocaleString()} km`,
-                      price: car.price ? `${car.price.toLocaleString()} €` : "Ár kérésre",
-                      image: car.imageUrl || '/images/placeholder-car.jpg'
-                    }}
-                  />
+                  product={{
+                    part_id: car.car_id, // Az id-t ide tesszük, hogy a link jó legyen
+                    name: `${car.brand} ${car.model}`,
+                    manufacturer: car.build_type.toUpperCase(),
+                    part_number: car.vin,
+                    price: car.price,
+                    stock_quantity: 1, // Hogy ne írja ki: "Nincs készleten"
+                    description: car.description,
+                    image: car.imageUrl || '/images/placeholder-car.jpg'
+                  }}
+                />
               </div>
             ))
           ) : (

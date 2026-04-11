@@ -4,8 +4,9 @@ exports.createPart = async (data) => {
   return await partModel.create(data)
 }
 
-exports.getAllParts = async () => {
-  return await partModel.findAll()
+// Átvesszük a szűrőket és adjuk tovább a modelnek
+exports.getAllParts = async (query, price) => {
+  return await partModel.findAll(query, price)
 }
 
 exports.getPartById = async (id) => {

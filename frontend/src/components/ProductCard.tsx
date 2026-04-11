@@ -1,63 +1,57 @@
 import Link from 'next/link';
 import styles from './ProductCard.module.css';
 
-// 1. Átalakítjuk az interfészt, hogy illeszkedjen a valósághoz
+// Az SQL tábládhoz igazított interface
 export interface Product {
-  id?: string | number;
-  isCar?: boolean;
-  title?: string;       
-  category?: string;
-  price?: string;       
-  specs?: string;      
-  inStock?: boolean;   
-  image?: string;
+  part_id: number;
+  name: string;
+  manufacturer: string;
+  part_number: string;
+  price: number;
+  stock_quantity: number;
+  description: string;
+  image?: string; // Ha később lesz kép az adatbázisban
 }
 
 export default function ProductCard({ product }: { product: Product }) {
   if (!product) return null;
 
+  const inStock = product.stock_quantity > 0;
+
   return (
     <div className={styles.card}>
       {/* Készlet jelző */}
-      {product.inStock !== undefined && (
-        <div className={`${styles.stockBadge} ${product.inStock ? styles.inStock : styles.outOfStock}`}>
-          {product.inStock ? 'In Stock' : 'Out of Stock'}
-        </div>
-      )}
+      <div className={`${styles.stockBadge} ${inStock ? styles.inStock : styles.outOfStock}`}>
+        {inStock ? `${product.stock_quantity} db készleten` : 'Nincs készleten'}
+      </div>
 
       <div className={styles.imageContainer}>
         {product.image ? (
-            <div 
-                className={styles.actualImage} 
-                style={{ backgroundImage: `url(${product.image})` }} 
-            />
+          <div className={styles.actualImage} style={{ backgroundImage: `url(${product.image})` }} />
         ) : (
-            <div className={styles.placeholderImg}>
-                <span className="text-uppercase opacity-25 fw-bold">nincs kép</span>
-            </div>
+          <div className={styles.placeholderImg}>
+            <span className="text-uppercase opacity-25 fw-bold">No Image</span>
+          </div>
         )}
       </div>
 
       <div className={styles.content}>
-        <span className={styles.categoryTag}>{product.category}</span>
-        <h3 className={styles.productName}>{product.title}</h3>
+        <span className={styles.categoryTag}>{product.manufacturer}</span>
+        <h3 className={styles.productName}>{product.name}</h3>
         
-        {/* Specifikációk megjelenítése*/}
         <div className={styles.compat}>
-          {product.specs && (
-            <span className="badge bg-dark text-secondary p-2">
-              {product.specs.toUpperCase()}
-            </span>
-          )}
+          <span className="badge bg-dark text-secondary p-2">
+            {product.part_number}
+          </span>
         </div>
 
         <div className={styles.footer}>
           <div className={styles.priceTag}>
-            {product.price}
+            {Number(product.price).toLocaleString('hu-HU')} <small className={styles.currency}>Ft</small>
           </div>
 
           <Link 
-            href={`/catalog/${product.id}`} 
+            href={`/catalog/${product.part_id}`} 
             className={`${styles.addBtn} text-decoration-none text-center`}
           >
              Részletek
