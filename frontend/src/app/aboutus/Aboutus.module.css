@@ -10,7 +10,7 @@
     height: 60vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/images/about-hero.jpg');
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('a123.jpeg') no-repeat;
     background-size: cover;
     background-position: center;
     border-bottom: 2px solid #dc3545;
@@ -35,7 +35,6 @@
     border: 1px solid #333;
     padding: 10px;
     background: #111;
-    transform: rotate(2deg);
 }
 
 .imagePlaceholder {
