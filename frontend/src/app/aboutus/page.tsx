@@ -1,4 +1,5 @@
 import styles from './Aboutus.module.css';
+import Image from 'next/image';
 
 // A tanár által kért metaadatok a keresőoptimalizáláshoz
 export const metadata = {
@@ -46,7 +47,7 @@ export default function AboutPage() {
         <br />
         <div className={styles.imageCard}>
                <div className={styles.imagePlaceholder}>
-                <img src="pics/0b76b99f-ba07-450e-81df-b8b6071e6ba3.jpeg" alt="puma_elso" />
+                <img src="/pics/a123.jpeg" alt="puma_elso" />
               </div>
             </div>
         <br />
