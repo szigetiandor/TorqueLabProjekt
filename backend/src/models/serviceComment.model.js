@@ -35,7 +35,7 @@ exports.update = async (id, comment) => {
     .input("id", id)
     .input("by_user", comment.by_user)
     .input("comment", comment.comment)
-    .query(`UPDATE service_comment SET by_user=@by_user, comment=@comment OUTPUT INSERTED.* WHERE service_id=@id`);
+    .query(`UPDATE service_comment SET by_user=@by_user, comment=@comment OUTPUT INSERTED.* WHERE service_comment_id=@id`);
   return result.recordset[0] ?? null
 }
 

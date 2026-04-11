@@ -42,7 +42,7 @@ exports.update = async (id, servicePart) => {
     .input("part_id", servicePart.part_id)
     .input("quantity", servicePart.quantity)
     .input("unit_price", servicePart.unit_price)
-    .query(`UPDATE service_part SET service_id=@service_id, part_id=@part_id, quantity=@quantity, unit_price=@unit_price OUTPUT INSERTED.* WHERE service_id=@id`);
+    .query(`UPDATE service_part SET service_id=@service_id, part_id=@part_id, quantity=@quantity, unit_price=@unit_price OUTPUT INSERTED.* WHERE service_part_id=@id`);
   return result.recordset[0] ? new ServicePart(result.recordset[0]) : null
 }
 

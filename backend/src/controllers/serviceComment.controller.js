@@ -25,8 +25,7 @@ exports.createServiceComment = async (req, res) => {
 exports.getAllServiceComments = async (req, res) => {
   try {
     const serviceComments = await serviceCommentService.getAllServiceComments()
-    const serviceCommentIds = serviceComments.map(x => x.service_comment_id)
-    res.status(200).json({service_comment_ids: serviceCommentIds})
+    res.status(200).json({service_comments: serviceComments})
   }
   catch (err) {
     console.log(err)
