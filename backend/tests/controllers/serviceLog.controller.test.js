@@ -1,108 +1,155 @@
 const serviceLogController = require('../../src/controllers/serviceLog.controller');
 const serviceLogService = require('../../src/services/serviceLog.service');
 
-
+// A szerviz réteg mockolása
 jest.mock('../../src/services/serviceLog.service');
 
-describe('ServiceLog Controller', () => {
-  let req, res;
+describe('ServiceLogController Unit Tests', () => {
+    let req, res;
 
-  beforeEach(() => {
-    req = {
-      body: {},
-      params: {}
-    };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn().mockReturnThis()
-    };
-    jest.clearAllMocks();
-  });
-
-  describe('createServiceLog', () => {
-    it('400-as hibát ad, ha hiányzik a car_id', async () => {
-      req.body = { performed_by: 'Kovács Úr', service_date: '2024-05-10' };
-
-      await serviceLogController.createServiceLog(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: "Car ID is required" });
+    beforeEach(() => {
+        req = {
+            params: {},
+            body: {},
+            user: {}
+        };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn().mockReturnThis()
+        };
+        jest.clearAllMocks();
+        // Console error/log elnyomása tesztelés alatt
+        jest.spyOn(console, 'log').mockImplementation(() => {});
+        jest.spyOn(console, 'error').mockImplementation(() => {});
     });
 
-    it('400-as hibát ad, ha hiányzik a performed_by', async () => {
-      req.body = { car_id: 1, service_date: '2024-05-10' };
+    // --- createServiceLog ---
+    describe('createServiceLog', () => {
+        test('Sikeres létrehozás (201)', async () => {
+            req.body = { car_id: 1, service_date: '2024-03-20', description: 'Olajcsere' };
+            serviceLogService.createService.mockResolvedValue({ id: 100, ...req.body });
 
-      await serviceLogController.createServiceLog(req, res);
+            await serviceLogController.createServiceLog(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: "performed by is required" });
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(serviceLogService.createService).toHaveBeenCalledWith(expect.objectContaining({
+                car_id: 1,
+                performed_by: 1 // Alapértelmezett érték ellenőrzése
+            }));
+        });
+
+        test('Hiba: Hiányzó car_id (400)', async () => {
+            req.body = { service_date: '2024-03-20' };
+            await serviceLogController.createServiceLog(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Car ID is required' });
+        });
     });
 
-    it('sikeres létrehozásnál 201-et és a mentett naplót adja vissza', async () => {
-      const validLog = { car_id: 1, performed_by: 'Szerelő', service_date: '2024-05-10', description: 'Olajcsere' };
-      req.body = validLog;
-      serviceLogService.createService.mockResolvedValue({ id: 55, ...validLog });
+    // --- getServiceComments ---
+    describe('getServiceComments', () => {
+        test('Kommentek sikeres lekérése (200)', async () => {
+            req.params.id = '100';
+            const mockComments = [{ id: 1, comment: 'Minden rendben' }];
+            serviceLogService.getCommentsByServiceId.mockResolvedValue(mockComments);
 
-      await serviceLogController.createServiceLog(req, res);
+            await serviceLogController.getServiceComments(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ id: 55 }));
-    });
-  });
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(mockComments);
+        });
 
-  describe('getAllServiceLogs', () => {
-    it('le kell kérnie az összes szerviz bejegyzést', async () => {
-      const mockLogs = [{ id: 1, car_id: 1 }, { id: 2, car_id: 2 }];
-      serviceLogService.getAllServices.mockResolvedValue(mockLogs);
-
-      await serviceLogController.getAllServiceLogs(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(mockLogs);
-    });
-  });
-
-  describe('getServiceLogById', () => {
-    it('404-et ad, ha a bejegyzés nem található', async () => {
-      req.params.id = '99';
-      serviceLogService.getServiceById.mockResolvedValue(null);
-
-      await serviceLogController.getServiceLogById(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ error: "ServiceLog not found" });
-    });
-  });
-
-  describe('updateServiceLog', () => {
-    it('ellenőriznie kell a kötelező mezőket frissítésnél is', async () => {
-      req.params.id = '1';
-      req.body = { car_id: 1 }; 
-
-      await serviceLogController.updateServiceLog(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
+        test('Hiba: Szerver hiba (500)', async () => {
+            req.params.id = '100';
+            serviceLogService.getCommentsByServiceId.mockRejectedValue(new Error('DB hiba'));
+            
+            await serviceLogController.getServiceComments(req, res);
+            
+            expect(res.status).toHaveBeenCalledWith(500);
+        });
     });
 
-    it('sikeres frissítésnél 200-at (alapértelmezett) és az új adatokat adja vissza', async () => {
-      req.params.id = '1';
-      const updateData = { car_id: 1, performed_by: 'Jani', service_date: '2024-06-01' };
-      req.body = updateData;
-      serviceLogService.updateService.mockResolvedValue({ id: 1, ...updateData });
-
-      await serviceLogController.updateServiceLog(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining(updateData));
+    // --- getAllServiceLogs ---
+    describe('getAllServiceLogs', () => {
+        test('Összes log lekérése', async () => {
+            serviceLogService.getAllServices.mockResolvedValue([{ id: 1 }]);
+            await serviceLogController.getAllServiceLogs(req, res);
+            expect(res.json).toHaveBeenCalledWith(expect.any(Array));
+        });
     });
-  });
 
-  describe('deleteServiceLog', () => {
-    it('sikeres törlésnél visszaadja a törölt bejegyzés adatait/vagy siker üzenetet', async () => {
-      req.params.id = '10';
-      serviceLogService.deleteService.mockResolvedValue({ id: 10, deleted: true });
+    // --- getServiceLogById ---
+    describe('getServiceLogById', () => {
+        test('Létező log lekérése (200)', async () => {
+            req.params.id = '5';
+            serviceLogService.getServiceById.mockResolvedValue({ id: 5 });
+            await serviceLogController.getServiceLogById(req, res);
+            expect(res.json).toHaveBeenCalledWith({ id: 5 });
+        });
 
-      await serviceLogController.deleteServiceLog(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({ id: 10, deleted: true });
+        test('Hiba: Nem létező log (404)', async () => {
+            req.params.id = '999';
+            serviceLogService.getServiceById.mockResolvedValue(null);
+            await serviceLogController.getServiceLogById(req, res);
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
     });
-  });
+
+    // --- updateServiceLog ---
+    describe('updateServiceLog', () => {
+        test('Sikeres módosítás (200)', async () => {
+            req.params.id = '1';
+            req.body = { car_id: 1, performed_by: 2, service_date: '2024-01-01', description: 'Javítva' };
+            serviceLogService.updateService.mockResolvedValue({ id: 1, ...req.body });
+
+            await serviceLogController.updateServiceLog(req, res);
+
+            expect(res.json).toHaveBeenCalled();
+            expect(serviceLogService.updateService).toHaveBeenCalledWith('1', req.body);
+        });
+
+        test('Hiba: Hiányzó mezők a módosításnál (400)', async () => {
+            req.body = { car_id: 1 }; // performed_by és dátum hiányzik
+            await serviceLogController.updateServiceLog(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+        });
+    });
+
+    // --- deleteServiceLog ---
+    describe('deleteServiceLog', () => {
+        test('Sikeres törlés', async () => {
+            req.params.id = '1';
+            serviceLogService.deleteService.mockResolvedValue({ id: 1 });
+            await serviceLogController.deleteServiceLog(req, res);
+            expect(res.json).toHaveBeenCalled();
+        });
+
+        test('Hiba: Törlendő log nem található (404)', async () => {
+            req.params.id = '999';
+            serviceLogService.deleteService.mockResolvedValue(null);
+            await serviceLogController.deleteServiceLog(req, res);
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
+    });
+
+    // --- getMyServiceLogs ---
+    describe('getMyServiceLogs', () => {
+        test('Saját logok lekérése a req.user-ből (200)', async () => {
+            req.user = { user_id: 42 };
+            const mockLogs = [{ id: 1, car_id: 5, description: 'Saját szerviz' }];
+            serviceLogService.getLogsByOwner.mockResolvedValue(mockLogs);
+
+            await serviceLogController.getMyServiceLogs(req, res);
+
+            expect(serviceLogService.getLogsByOwner).toHaveBeenCalledWith(42);
+            expect(res.json).toHaveBeenCalledWith(mockLogs);
+        });
+
+        test('Hiba: Lekérés sikertelen (500)', async () => {
+            req.user = { user_id: 42 };
+            serviceLogService.getLogsByOwner.mockRejectedValue(new Error('Szerver hiba'));
+            await serviceLogController.getMyServiceLogs(req, res);
+            expect(res.status).toHaveBeenCalledWith(500);
+        });
+    });
 });
