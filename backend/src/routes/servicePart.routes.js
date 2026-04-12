@@ -12,9 +12,9 @@ const { verifyToken, verifyAdmin } = require("../middleware/auth.middleware")
  * @route POST /service-parts
  * @group ServiceParts
  * @description Új alkatrészfelhasználás rögzítése egy konkrét szerviznaplóhoz.
- * @access Private (Csak Adminisztrátoroknak)
+ * @access Private
  */
-router.post("/", verifyToken, verifyAdmin, servicePartController.createServicePart);
+router.post("/", verifyToken, servicePartController.createServicePart);
 
 /**
  * @route GET /service-parts
