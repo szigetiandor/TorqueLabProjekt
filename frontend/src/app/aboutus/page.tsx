@@ -156,20 +156,49 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* NULLADIK KILOMÉTERKŐ */}
-      <section className="py-5 container">
-        <h2 className={styles.sectionTitle}>
-          Ahonnan indultunk: <span className="text-danger">A „Nulladik" Kilométerkő</span>
-        </h2>
-        <p>
-          Minden sikeres műhelynek van egy eredettörténete. A miénk nem egy csillogó,
-          szalonállapotú sportkocsival kezdődött, hanem egy viharvert, 1999-es Ford Pumával.
-        </p>
-        <div className={styles.imageCard}>
-          <div className={styles.imagePlaceholder}>
-            <img src="/pics/a123.jpeg" alt="puma_elso" />
+          {/* NULLADIK KILOMÉTERKŐ */}
+    <section className="py-5 container">
+      <h2 className={styles.sectionTitle}>
+        Ahonnan indultunk: <span className="text-danger">A „Nulladik" Kilométerkő</span>
+      </h2>
+      
+      <p className="mb-4">
+        Minden sikeres műhelynek van egy eredettörténete. A miénk nem egy csillogó,
+        szalonállapotú sportkocsival kezdődött, hanem egy viharvert, 1999-es Ford Pumával.
+      </p>
+
+      {/* kep -- video egymas mellett */}
+      <div className="row g-4 mb-4"> 
+        {/* kep */}
+        <div className="col-md-6">
+          <div className={styles.imageCard} style={{ height: '400px' }}>
+            <div className={styles.imagePlaceholder} style={{ height: '100%', width: '100%' }}>
+              <img 
+                src="/puma_elso.png" 
+                alt="puma_elso" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+              />
+            </div>
           </div>
         </div>
+
+        {/* video */}
+        <div className="col-md-6">
+          <div className={styles.imageCard} style={{ height: '400px' }}>
+            <div className={styles.imagePlaceholder} style={{ height: '100%', width: '100%', overflow: 'hidden', borderRadius: '8px' }}>
+              <video
+                src="/puma_fustol.mp4" 
+                autoPlay
+                loop
+                muted
+                playsInline
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
         <br />
         <p className="text-secondary">
           A pumának sok baja volt és a motorfelújítástól kezdve a lakataláson át mindent meg kellett
@@ -177,23 +206,85 @@ export default function AboutPage() {
           egeret.
         </p>
         <p>
-          Azokon a fagyos, hajnalba nyúló éjszakákon, a fűtetlen garázsban tanultuk meg a
-          legfontosabb leckéket. Azon a Pumán próbáltuk ki az első saját építésű
+          Mi a garázsban tanultunk meg szerelni. Azon a Pumán próbáltuk ki az első saját építésű
           kipufogórendszerünket, azon kísérleteztünk és kerestük a motorhibát különböző
           módszerekkel, és azzal az autóval éltük át az első igazán komoly motorépítés izgalmát.
         </p>
-        <div className={styles.imageCard}>
-          <div className={styles.imagePlaceholder}>szar puma</div>
+        
+             {/* 3 kep */}
+      <div className="row g-4 mb-4"> 
+        {/* kep */}
+        <div className="col-md-4">
+          <div className={styles.imageCard} style={{ height: '400px' }}>
+            <div className={styles.imagePlaceholder} style={{ height: '100%', width: '100%' }}>
+              <img 
+                src="/puma_szereles2.jpeg" 
+                alt="puma szerelése" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+              />
+            </div>
+          </div>
         </div>
-        <p>
-          A Puma ma már köszönőviszonyban sincs egykori önmagával. Kapott egy új sport
-          kipufogórendszert, kikönnyítettük az utolsó dekáig, egy teljesen egyedi hajtáslánc van
-          alatta, és jelenleg is aktív, tűzköpő rallyautóként riogatja a mezőnyt a helyi
-          bajnokságokban.
-        </p>
-        <div className={styles.imageCard}>
-          <div className={styles.imagePlaceholder}>pimped ai generalt rally puma</div>
+
+        <div className="col-md-4">
+          <div className={styles.imageCard} style={{ height: '400px' }}>
+            <div className={styles.imagePlaceholder} style={{ height: '100%', width: '100%' }}>
+              <img 
+                src="/puma_szereles3.jpeg" 
+                alt="puma szerelése" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+              />
+            </div>
+          </div>
         </div>
+        <div className="col-md-4">
+          <div className={styles.imageCard} style={{ height: '400px' }}>
+            <div className={styles.imagePlaceholder} style={{ height: '100%', width: '100%' }}>
+              <img 
+                src="/puma_szereles1.png"
+                alt="puma szerelése" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+          
+        <div className="row g-5 align-items-center mb-5"> 
+        {/* SZÖVEG OSZLOP */}
+        <div className="col-md-6">
+          <p className="lead text-white">
+            A Puma ma már köszönőviszonyban sincs egykori önmagával. 
+            Kapott egy új sport kipufogórendszert, kikönnyítettük az utolsó dekáig, 
+            egy teljesen egyedi hajtáslánc van alatta, és jelenleg is aktív, 
+            tűzköpő autóként riogatja az utakat.
+          </p>
+          <p className="text-secondary">
+            Minden egyes csavarját ismerjük, és ez az autó a bizonyíték rá: 
+            nincs reménytelen projekt, csak kevés elszántság.
+          </p>
+        </div>
+
+        {/* MAGASABB KÉP OSZLOP */}
+        <div className="col-md-6">
+          <div className={styles.imageCard} style={{ height: '600px' }}> {/* Itt emeltük meg a magasságot */}
+            <div className={styles.imagePlaceholder} style={{ height: '100%', width: '100%', overflow: 'hidden' }}>
+              <img 
+                src="/puma_pimped.jpeg" 
+                alt="pimped rally puma" 
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'cover', // Kitölti a 600px-t, de nem torzul
+                  objectPosition: 'center', // Középre fókuszál a kép vágásánál
+                  borderRadius: '8px' 
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+        
         <p>
           Van egy elképzelésed? Egy projekted, amihez hiányzik a szakértelem, vagy csak kihoznál
           még 50 lóerőt a blokkból?
