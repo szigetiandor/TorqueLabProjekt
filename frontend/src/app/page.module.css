@@ -8,20 +8,23 @@
     background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);
     border-bottom: 2px solid #dc3545;
 
-    min-height: 80vh;
+    min-height: 70vh;              /* kisebb, nem lesz túl üres */
+    
     display: flex;
     align-items: center;
     justify-content: center;
 
-    padding: 40px 0;
+    padding-top: 40px;             /* kevesebb felső tér */
+    padding-bottom: 60px;
 }
 
 .heroLogo {
     display: block;
-    max-width: 460px;
+    max-width: 600px;   /* 🔥 EZ A LÉNYEG */
     width: 100%;
     height: auto;
     margin: 0 auto 20px auto;
+
     filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.6));
 }
 

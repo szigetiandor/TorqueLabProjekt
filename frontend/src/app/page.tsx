@@ -13,7 +13,7 @@ export default function Home() {
             alt="TorqueLab"
             className={styles.heroLogo}
           />
-
+           <h2 className={styles.sectionTitle}>Nem csak javítunk! <span className="text-danger"> Építünk. Fejlesztünk. Tökéletesítünk.</span></h2>
           <p className={`${styles.heroText} lead text-secondary`}>
             Ahol a nyomaték nem csak egy szám, hanem maga az élmény.
           </p>

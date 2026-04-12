@@ -10,7 +10,7 @@
     height: 60vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('a123.jpeg') no-repeat;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('steel_bc_alive.jpg') no-repeat;
     background-size: cover;
     background-position: center;
     border-bottom: 2px solid #dc3545;
@@ -64,3 +64,10 @@
         font-size: 2.5rem;
     }
 }
+
+img:hover {
+  transform: scale(1.03);
+  transition: 0.3s;
+  
+}
+
