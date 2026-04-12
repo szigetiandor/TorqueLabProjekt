@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { apiRequest } from '@/lib/api';
+import ServiceComments from '@/components/ServiceComments';
 
 type AdminView = 'parts' | 'users' | 'cars' | 'logs';
 
@@ -14,6 +15,7 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
   const [formData, setFormData] = useState<any>({});
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState(''); 
+  const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 
   // --- AUTOMATIKUS FRISSÍTÉS ---
   useEffect(() => {
@@ -69,6 +71,7 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
         })
       });
       setNewComment('');
+      setCommentRefreshKey(prev => prev + 1);
       fetchComments(serviceId); // Frissítés
     } catch (err) {
       alert("Hiba a komment mentésekor!");
@@ -117,6 +120,9 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
       setShowModal(false);
       setEditingItem(null);
       fetchData();
+
+      console.log(`submitted data: ${JSON.stringify(formData)}`)
+
       alert("Sikeres mentés!");
     } catch (err: any) {
       // --- MAGYARNYELVŰ HIBAKEZELÉS (Lajikus szemmel) ---
@@ -175,21 +181,34 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
   };
 
   const openEdit = (item: any) => {
-    setEditingItem(item);
-    
+    // Készítünk egy tiszta másolatot az objektumról
     let preparedData = { ...item };
 
-    // Ha szerviznaplóról van szó, formázzuk a dátumot az inputnak megfelelően
-    if (activeView === 'logs' && item.service_date) {
-      preparedData.service_date = formatDateForInput(item.service_date);
+    console.log("item:")
+    console.log(JSON.stringify(item))
+
+    // Speciális kezelés a naplókhoz (logs)
+    if (activeView === 'logs') {
+      // Dátum formázása: YYYY-MM-DD (az input[type="date"] csak ezt eszi meg)
+      if (item.service_date) {
+        preparedData.service_date = formatDateForInput(item.service_date);
+      }
+      
+      // Biztosítjuk a státuszt (ha a DB-ben kicsi/nagybetű eltérés lenne)
+      // A select option-ökben: "Pending", "In Progress", stb. szerepelnek
+      preparedData.status = item.status || 'Pending';
+
+      // Betöltjük a hozzátartozó kommenteket
       fetchComments(getItemId(item));
     }
 
     if (activeView === 'users') {
-      preparedData.password = ''; // Jelszót ne töltsük be
+      preparedData.password = ''; // Biztonság: jelszót sosem töltünk be
     }
 
-    setFormData(preparedData);
+    // Beállítjuk a szerkesztendő elemet és a form adatait
+    setEditingItem(item);
+    setFormData(preparedData); 
     setShowModal(true);
   };
 
@@ -330,10 +349,11 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
         value={formData.status || 'pending'} 
         onChange={(e) => setFormData({...formData, status: e.target.value})}
       >
-        <option value="pending">Függőben</option>
-        <option value="in_progress">Folyamatban</option>
-        <option value="completed">Elkészült</option>
-        <option value="cancelled">Törölve</option>
+        <option value="Pending">Függőben</option>
+        <option value="In Progress">Folyamatban</option>
+        <option value="Awaiting Parts">Alkatrészre vár</option>
+        <option value="Completed">Elkészült</option>
+        <option value="Cancelled">Törölve</option>
       </select>
     </div>
     <div className="col-6">
@@ -352,35 +372,26 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
     {/* KOMMENT SZEKCIÓ - Csak szerkesztésnél látszik */}
     {editingItem && (
       <div className="col-12 mt-4 border-top border-secondary pt-3">
-        <h6 className="text-danger fw-bold text-uppercase small mb-3">Belső Megjegyzések (Comments)</h6>
+        <h6 className="text-danger fw-bold text-uppercase small mb-3">Belső Megjegyzések</h6>
         
-        <div className="bg-black rounded p-2 mb-3" style={{ maxHeight: '150px', overflowY: 'auto' }}>
-          {comments.length === 0 ? (
-            <small className="text-secondary d-block text-center py-2">Nincs még megjegyzés.</small>
-          ) : (
-            comments.map((c, i) => (
-              <div key={i} className="border-bottom border-secondary border-opacity-25 mb-2 pb-1">
-                <div className="d-flex justify-content-between">
-                  <span className="text-danger small fw-bold">User #{c.by_user}</span>
-                </div>
-                <p className="m-0 small text-light">{c.comment}</p>
-              </div>
-            ))
-          )}
-        </div>
+        {/* Itt használjuk az új komponenst az olvasáshoz */}
+        <ServiceComments key={`comments-${getItemId(editingItem)}-${commentRefreshKey}`} serviceId={getItemId(editingItem)} />
 
-        <div className="input-group input-group-sm">
+        {/* Beküldő mező az adminnak */}
+        <div className="input-group input-group-sm mt-3">
           <input 
             type="text" 
             className="form-control bg-black text-white border-secondary" 
-            placeholder="Új megjegyzés írása..."
+            placeholder="Új válasz írása..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
           />
           <button 
             className="btn btn-outline-danger" 
             type="button" 
-            onClick={() => handleAddComment(getItemId(editingItem))}
+            onClick={async () => {
+              await handleAddComment(getItemId(editingItem));
+            }}
           >
             Küldés
           </button>

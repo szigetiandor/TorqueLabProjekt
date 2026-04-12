@@ -20,11 +20,10 @@ router.get('/my', authMiddleware.verifyToken, serviceLogController.getMyServiceL
  * @route POST /service-logs
  * @group ServiceLogs
  * @description Új szerviznapló bejegyzés (munkalap) létrehozása.
- * @access Private (Csak Adminisztrátoroknak)
+ * @access Private
  */
 router.post("/", 
-  authMiddleware.verifyToken, 
-  authMiddleware.verifyAdmin, 
+  authMiddleware.verifyToken,
   serviceLogController.createServiceLog
 );
 
