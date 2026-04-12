@@ -11,7 +11,7 @@ export default function AboutPage() {
       <section className={styles.hero}>
         <div className="container text-center">
           <h1 className={styles.glitchText}>Ahol a fém életre kel</h1>
-          <p className="lead text-white-50">Két jóbarát valóra vált álma.</p>
+          <p className="lead text-white-50">Rólunk</p>
         </div>
       </section>
 
