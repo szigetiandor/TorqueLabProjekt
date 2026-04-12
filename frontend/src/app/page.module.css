@@ -1,13 +1,35 @@
-
 .mainWrapper {
-    background-color: #0b0b0b; 
+    background-color: #0b0b0b;
     color: #e0e0e0;
+    overflow-x: hidden;
 }
 
 .heroSection {
     background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);
-    background-size: cover; /* Vagy 'cover', attól függően, mekkora a logó */
-    border-bottom: 2px solid #dc3545; 
+    border-bottom: 2px solid #dc3545;
+
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px 0;
+}
+
+.heroLogo {
+    display: block;
+    max-width: 460px;
+    width: 100%;
+    height: auto;
+    margin: 0 auto 20px auto;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.6));
+}
+
+.heroText {
+    max-width: 720px;
+    margin: 0 auto 28px auto;
+    font-size: 1.25rem;
+    color: #aaa !important;
 }
 
 .darkCard {
@@ -18,7 +40,7 @@
 
 .darkCard:hover {
     transform: translateY(-10px);
-    border-color: #dc3545 !important; 
+    border-color: #dc3545 !important;
 }
 
 .graySection {

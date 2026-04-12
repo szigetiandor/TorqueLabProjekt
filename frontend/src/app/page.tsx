@@ -6,62 +6,57 @@ export default function Home() {
     <main className={styles.mainWrapper}>
 
       {/* HERO SECTION */}
-      {/*
-      <section className={`${styles.heroSection} py-5 position-relative shadow-lg`}>
-        <div className="container py-5 text-center">
-          <img 
-            src="logo.png" 
+      <section className={`${styles.heroSection} shadow-lg`}>
+        <div className="container text-center">
+          <img
+            src="/logo_vegleg.png"
             alt="TorqueLab"
-            className="mb-4"
+            className={styles.heroLogo}
           />
-          {/*
-          <h1 className="display-1 fw-bold text-uppercase italic text-white">
-            Torque <span className="text-danger">Lab</span>
-          </h1>
-          <p className="lead fs-3 mb-5 text-secondary">
-            Több mint szervíz. Életstílus.
+
+          <p className={`${styles.heroText} lead text-secondary`}>
+            Ahol a nyomaték nem csak egy szám, hanem maga az élmény.
           </p>
+
           <div className="d-flex justify-content-center gap-3">
-            <Link href="/aboutus" className={`btn btn-lg px-5 ${styles.btnDangerCustom} text-white`}>
+            <Link
+              href="/aboutus"
+              className={`btn btn-lg px-5 ${styles.btnDangerCustom} text-white`}
+            >
               Ismerd meg csapatunkat!
             </Link>
           </div>
         </div>
       </section>
-      */}
-      <img 
-            src="logo-sk.png" 
-            alt="TorqueLab"
-            className="mb-4"
-          />
 
       {/* RÓLUNK SZAKASZ */}
       <section className="py-5 bg-black">
-        
         <div className="container py-5">
           <div className="row align-items-center">
             <div className="col-lg-6 mb-5 mb-lg-0">
               <div className={`${styles.darkCard} rounded-4 shadow-sm p-2`}>
-                <div 
-                  style={{ height: '400px', backgroundColor: '#000' }} 
+                <div
+                  style={{ height: '400px', backgroundColor: '#000' }}
                   className="rounded-4 d-flex align-items-center justify-content-center text-secondary border border-secondary"
                 >
                   [ FOTÓ A MŰHELYÜNKRŐL ]
                 </div>
               </div>
             </div>
+
             <div className="col-lg-6 ps-lg-5 text-white">
               <h2 className="display-5 fw-bold mb-4">Hozd ki a legtöbbet autódból</h2>
               <p className={`${styles.textGray} fs-5 mb-4`}>
-                Csapatunk fordokra specializálódott s több mint 20 éves szerelési tapasztalattal rendelkezik.
-                Több mint 10 éve pedig utcai és versenyautók építésében, tunningolásában jártas.
+                Csapatunk Fordokra specializálódott, és több mint 20 éves szerelési tapasztalattal rendelkezik.
+                Több mint 10 éve pedig utcai és versenyautók építésében, tuningolásában jártas.
               </p>
+
               <ul className="list-unstyled mb-5">
                 <li className="mb-3"><strong className="text-danger">✓</strong> Professzionális diagnosztikai eszközök</li>
                 <li className="mb-3"><strong className="text-danger">✓</strong> Minőségi alkatrészek széles választékban</li>
-                <li className="mb-3"><strong className="text-danger">✓</strong> Szakértelem a felső fokon</li>
+                <li className="mb-3"><strong className="text-danger">✓</strong> Szakértelem a legmagasabb szinten</li>
               </ul>
-             
+
               <Link href="/aboutus" className="btn btn-outline-danger px-4 py-2">
                 Történetünk
               </Link>
@@ -80,24 +75,24 @@ export default function Home() {
 
           <div className="row g-4">
             {[
-              { 
-                icon: '🛒', 
-                title: 'Minőségi alkatrészek', 
-                text: 'Böngéssz prémium alkatrészeink széles kínálatában.', 
-                link: '/performance-parts' 
+              {
+                icon: '🛒',
+                title: 'Minőségi alkatrészek',
+                text: 'Böngéssz prémium alkatrészeink széles kínálatában.',
+                link: '/performance-parts',
               },
-              { 
-                icon: '🔧', 
-                title: 'Szerviz és Építés', 
-                text: 'Teljes körű karbantartás és egyedi projektmunkák.', 
-                link: '/service' 
+              {
+                icon: '🔧',
+                title: 'Szerviz és Építés',
+                text: 'Teljes körű karbantartás és egyedi projektmunkák.',
+                link: '/service',
               },
-              { 
-                icon: '🏎️', 
-                title: 'Projekt Autók', 
-                text: 'Egyedileg épített járművek, készen az új tulajdonosra.', 
-                link: '/catalog' 
-              }
+              {
+                icon: '🏎️',
+                title: 'Projekt Autók',
+                text: 'Egyedileg épített járművek, készen az új tulajdonosra.',
+                link: '/catalog',
+              },
             ].map((item, idx) => (
               <div key={idx} className="col-md-4">
                 <div className={`${styles.darkCard} text-center p-5 h-100 rounded-4 text-white`}>
@@ -120,15 +115,15 @@ export default function Home() {
           <div className="row">
             <div className="col-md-4 mb-4 mb-md-0">
               <h2 className="fw-bold text-danger display-5">500+</h2>
-              <p className="text-secondary text-uppercase small ls-2">Befejezett projekt</p>
+              <p className="text-secondary text-uppercase small">Befejezett projekt</p>
             </div>
             <div className="col-md-4 mb-4 mb-md-0 border-start border-secondary border-opacity-10">
               <h2 className="fw-bold text-danger display-5">10+</h2>
-              <p className="text-secondary text-uppercase small ls-2">Év tapasztalat</p>
+              <p className="text-secondary text-uppercase small">Év tapasztalat</p>
             </div>
             <div className="col-md-4 border-start border-secondary border-opacity-10">
               <h2 className="fw-bold text-danger display-5">100%</h2>
-              <p className="text-secondary text-uppercase small ls-2">Szenvedély</p>
+              <p className="text-secondary text-uppercase small">Szenvedély</p>
             </div>
           </div>
         </div>
