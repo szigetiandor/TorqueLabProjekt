@@ -2,76 +2,105 @@ const request = require('supertest');
 const express = require('express');
 const carRoutes = require('../../src/routes/car.routes');
 const carController = require('../../src/controllers/car.controller');
+const authMiddleware = require('../../src/middleware/auth.middleware');
 
-
+// Kontroller és Middleware mockolása
 jest.mock('../../src/controllers/car.controller');
+jest.mock('../../src/middleware/auth.middleware');
 
 const app = express();
 app.use(express.json());
 app.use('/cars', carRoutes);
 
-describe('Car Routes', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+describe('Car Routes Unit Tests with Auth Mocking', () => {
 
-  describe('POST /cars', () => {
-    it('meg kell hívnia a carController.createCar-t', async () => {
-      carController.createCar.mockImplementation((req, res) => res.status(201).json({ id: 1 }));
+    beforeEach(() => {
+        jest.clearAllMocks();
 
-      const res = await request(app)
-        .post('/cars')
-        .send({ brand: 'Audi', model: 'RS6' });
-
-      expect(res.statusCode).toBe(201);
-      expect(carController.createCar).toHaveBeenCalled();
+        // Alapértelmezett mock: a token érvényes
+        authMiddleware.verifyToken.mockImplementation((req, res, next) => {
+            req.user = { user_id: 10, is_admin: false };
+            next();
+        });
     });
-  });
 
-  describe('GET /cars', () => {
-    it('meg kell hívnia a carController.getAllCars-t', async () => {
-      carController.getAllCars.mockImplementation((req, res) => res.status(200).json([]));
+    describe('GET /cars & /cars/:id (Public Access)', () => {
+        test('GET /cars - Token nélkül is elérhető', async () => {
+            carController.getAllCars.mockImplementation((req, res) => res.status(200).json([]));
 
-      const res = await request(app).get('/cars');
+            const res = await request(app).get('/cars');
 
-      expect(res.statusCode).toBe(200);
-      expect(carController.getAllCars).toHaveBeenCalled();
+            expect(res.statusCode).toBe(200);
+            expect(carController.getAllCars).toHaveBeenCalled();
+            // Ellenőrizzük, hogy NEM hívódott meg a token ellenőrzés
+            expect(authMiddleware.verifyToken).not.toHaveBeenCalled();
+        });
+
+        test('GET /cars/:id - Publikusan megtekinthető', async () => {
+            carController.getCarById.mockImplementation((req, res) => res.status(200).json({ id: 1 }));
+
+            const res = await request(app).get('/cars/1');
+
+            expect(res.statusCode).toBe(200);
+            expect(carController.getCarById).toHaveBeenCalled();
+        });
     });
-  });
 
-  describe('GET /cars/:id', () => {
-    it('meg kell hívnia a carController.getCarById-t a helyes ID-val', async () => {
-      carController.getCarById.mockImplementation((req, res) => res.status(200).json({ id: req.params.id }));
+    describe('POST /cars (Protected)', () => {
+        test('Sikeres rögzítés érvényes tokennel', async () => {
+            carController.createCar.mockImplementation((req, res) => res.status(201).json({ id: 1 }));
 
-      const res = await request(app).get('/cars/42');
+            const res = await request(app)
+                .post('/cars')
+                .send({ brand: 'BMW', model: 'M3' });
 
-      expect(res.statusCode).toBe(200);
-      expect(res.body.id).toBe('42');
-      expect(carController.getCarById).toHaveBeenCalled();
+            expect(res.statusCode).toBe(201);
+            expect(authMiddleware.verifyToken).toHaveBeenCalled();
+            expect(carController.createCar).toHaveBeenCalled();
+        });
+
+        test('Edge Case: Elutasítás, ha a verifyToken hibát dob (401)', async () => {
+            authMiddleware.verifyToken.mockImplementation((req, res, next) => {
+                return res.status(401).json({ error: "Invalid token" });
+            });
+
+            const res = await request(app).post('/cars').send({});
+
+            expect(res.statusCode).toBe(401);
+            // A kontrollerig el sem jut a kérés
+            expect(carController.createCar).not.toHaveBeenCalled();
+        });
     });
-  });
 
-  describe('PUT /cars/:id', () => {
-    it('meg kell hívnia a carController.updateCar-t', async () => {
-      carController.updateCar.mockImplementation((req, res) => res.status(200).json({ updated: true }));
+    describe('PUT & DELETE /cars/:id (Protected)', () => {
+        test('PUT - Token ellenőrzés lefut módosítás előtt', async () => {
+            carController.updateCar.mockImplementation((req, res) => res.status(200).json({ updated: true }));
 
-      const res = await request(app)
-        .put('/cars/42')
-        .send({ price: 15000000 });
+            const res = await request(app).put('/cars/1').send({ mileage: 50000 });
 
-      expect(res.statusCode).toBe(200);
-      expect(carController.updateCar).toHaveBeenCalled();
+            expect(res.statusCode).toBe(200);
+            expect(authMiddleware.verifyToken).toHaveBeenCalled();
+        });
+
+        test('DELETE - Token ellenőrzés lefut törlés előtt', async () => {
+            carController.deleteCar.mockImplementation((req, res) => res.status(200).json({ message: "Deleted" }));
+
+            const res = await request(app).delete('/cars/1');
+
+            expect(res.statusCode).toBe(200);
+            expect(authMiddleware.verifyToken).toHaveBeenCalled();
+            expect(carController.deleteCar).toHaveBeenCalled();
+        });
+
+        test('Edge Case: DELETE token nélkül (401)', async () => {
+            authMiddleware.verifyToken.mockImplementation((req, res, next) => {
+                return res.status(401).json({ error: "Token required" });
+            });
+
+            const res = await request(app).delete('/cars/1');
+
+            expect(res.statusCode).toBe(401);
+            expect(carController.deleteCar).not.toHaveBeenCalled();
+        });
     });
-  });
-
-  describe('DELETE /cars/:id', () => {
-    it('meg kell hívnia a carController.deleteCar-t', async () => {
-      carController.deleteCar.mockImplementation((req, res) => res.status(200).json({ success: true }));
-
-      const res = await request(app).delete('/cars/42');
-
-      expect(res.statusCode).toBe(200);
-      expect(carController.deleteCar).toHaveBeenCalled();
-    });
-  });
 });
