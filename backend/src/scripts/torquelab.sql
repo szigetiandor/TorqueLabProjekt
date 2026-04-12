@@ -31,8 +31,10 @@ CREATE TABLE car (
     production_year INT NOT NULL,
     engine VARCHAR(50),
     mileage INT,
+    price DECIMAL(10,2) NOT NULL DEFAULT 0,
     for_sale BIT NOT NULL DEFAULT 0,
     owner_id INT NOT NULL,
+    [description] VARCHAR(255),
 
     FOREIGN KEY (owner_id) REFERENCES [user](user_id)
 );
@@ -101,9 +103,9 @@ CREATE TABLE [image] (
 GO
 
 INSERT INTO [user] (name, email, password_hash, is_admin) VALUES
+('Admin', 'admin@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 1),
 ('Sarah Connor', 'sarah.c@skymail.com', 'hash_sarah', 0),
-('James Bond', '007@mi6.gov.uk', 'hash_bond', 0),
-('Admin', 'admin@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 1);
+('James Bond', '007@mi6.gov.uk', 'hash_bond', 0);
 
 INSERT INTO car
 (vin, brand, model, production_year, engine, mileage, owner_id)

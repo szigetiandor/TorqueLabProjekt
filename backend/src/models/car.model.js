@@ -54,10 +54,10 @@ exports.create = async (car) => {
     .input("price", car.price)
     .input("imageUrl", car.imageUrl)
     .input("description", car.description)
-    .input("build_type", car.build_type)
+    // .input("build_type", car.build_type)
     .input("owner_id", car.owner_id)
-    .query(`INSERT INTO car (vin, brand, [model], [production_year], engine, mileage, price, imageUrl, [description], build_type, owner_id) 
-            OUTPUT INSERTED.* VALUES (@vin, @brand, @model, @production_year, @engine, @mileage, @price, @imageUrl, @description, @build_type, @owner_id)`);
+    .query(`INSERT INTO car (vin, brand, [model], [production_year], engine, mileage, price, [description], owner_id) 
+            OUTPUT INSERTED.* VALUES (@vin, @brand, @model, @production_year, @engine, @mileage, @price, @description, @owner_id)`);
   return new Car(result.recordset[0]);
 };
 

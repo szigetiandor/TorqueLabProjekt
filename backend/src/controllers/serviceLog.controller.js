@@ -8,15 +8,15 @@ exports.createServiceLog = async (req, res) => {
       return res.status(400).json({error: "Car ID is required"})
     }
 
-    if (!performed_by) {
-      return res.status(400).json({error: "performed by is required"})
-    }
+    // if (!performed_by) {
+    //   return res.status(400).json({error: "performed by is required"})
+    // }
 
     if (!service_date) {
       return res.status(400).json({error: "ServiceLog date is required"})
     }
 
-    const service = await serviceLogService.createService({car_id, performed_by, service_date, description})
+    const service = await serviceLogService.createService({car_id, performed_by: 1, service_date, description}) // 1 id = admin
 
     res.status(201).json(service)
   }

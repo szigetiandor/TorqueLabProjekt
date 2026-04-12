@@ -1,12 +1,30 @@
 const carService = require("../services/car.service");
 
 exports.createCar = async (req, res) => {
-  try {
-    const car = await carService.createCar(req.body);
-    res.status(201).json(car);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        if (!req.user || !req.user.user_id) {
+            return res.status(401).json({ error: "Nem azonosítható felhasználó!" });
+        }
+
+        const carData = {
+            vin: req.body.vin,
+            brand: req.body.brand,
+            model: req.body.model,
+            production_year: req.body.production_year,
+            engine: req.body.engine,
+            mileage: req.body.mileage,
+            for_sale: req.body.for_sale || 0,
+            price: req.body.price || 0,
+
+            owner_id: req.user.user_id
+        };
+
+        const car = await carService.createCar(carData);
+        res.status(201).json(car);
+    } catch (err) {
+        console.error("Hiba az autó mentésekor:", err.message);
+        res.status(500).json({ error: err.message });
+    }
 };
 
 exports.getAllCars = async (req, res) => {
