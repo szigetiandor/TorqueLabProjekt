@@ -104,8 +104,8 @@ GO
 
 INSERT INTO [user] (name, email, password_hash, is_admin) VALUES
 ('Admin', 'admin@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 1),
-('Sarah Connor', 'sarah.c@skymail.com', 'hash_sarah', 0),
-('James Bond', '007@mi6.gov.uk', 'hash_bond', 0);
+('Teszt Elek', 'teszt@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 0),
+
 
 INSERT INTO car
 (vin, brand, model, production_year, engine, mileage, owner_id)
@@ -124,9 +124,9 @@ VALUES
 INSERT INTO service_log
 (car_id, performed_by, service_date, description)
 VALUES
-(1, 3, '2024-03-15', 'Annual service, oil and filter change'),
-(2, 3, '2024-06-02', 'Pre-tuning inspection'),
-(3, 3, '2024-01-20', 'Brake replacement');
+(1, 1, '2024-03-15', 'Annual service, oil and filter change'),
+(2, 1, '2024-06-02', 'Pre-tuning inspection'),
+(3, 1, '2024-01-20', 'Brake replacement');
 
 INSERT INTO service_part
 (service_id, part_id, quantity, unit_price)
@@ -136,9 +136,9 @@ VALUES
 (2, 3, 1, 18000.00);
 
 INSERT INTO service_comment (by_user, service_id, comment) VALUES
-(3, 1, 'Found a small coolant leak, monitored for next visit.'),
-(3, 2, 'Car feels much smoother after the fresh oil!'),
-(3, 3, 'Waiting for the Akrapovic system to arrive from the supplier.');
+(1, 1, 'Found a small coolant leak, monitored for next visit.'),
+(1, 2, 'Car feels much smoother after the fresh oil!'),
+(1, 3, 'Waiting for the Akrapovic system to arrive from the supplier.');
 
 GO
 
