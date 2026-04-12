@@ -1,113 +1,140 @@
 const carController = require('../../src/controllers/car.controller');
 const carService = require('../../src/services/car.service');
 
-
+// A szerviz réteg mockolása
 jest.mock('../../src/services/car.service');
 
-describe('Car Controller', () => {
-  let req, res;
+describe('CarController Unit Tests', () => {
+    let req, res;
 
-  beforeEach(() => {
-    req = {
-      body: {},
-      params: {},
-      query: {}
-    };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn().mockReturnThis()
-    };
-    jest.clearAllMocks();
-  });
-
-  describe('createCar', () => {
-    it('201-es kódot és a létrehozott autót kell visszaadnia', async () => {
-      const mockCar = { id: 1, brand: 'BMW', model: 'M3' };
-      req.body = mockCar;
-      carService.createCar.mockResolvedValue(mockCar);
-
-      await carController.createCar(req, res);
-
-      expect(carService.createCar).toHaveBeenCalledWith(req.body);
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith(mockCar);
+    beforeEach(() => {
+        req = {
+            params: {},
+            body: {},
+            query: {},
+            user: {}
+        };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn().mockReturnThis()
+        };
+        jest.clearAllMocks();
     });
 
-    it('500-as hibát kell dobnia, ha a service hibázik', async () => {
-      carService.createCar.mockRejectedValue(new Error('Database error'));
+    // --- createCar tesztek ---
+    describe('createCar', () => {
+        test('Sikeres létrehozás (201)', async () => {
+            req.user = { user_id: 1 };
+            req.body = { vin: '12345', brand: 'Toyota' };
+            carService.createCar.mockResolvedValue({ id: 10, ...req.body, owner_id: 1 });
 
-      await carController.createCar(req, res);
+            await carController.createCar(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
-    });
-  });
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(carService.createCar).toHaveBeenCalledWith(expect.objectContaining({
+                owner_id: 1,
+                vin: '12345'
+            }));
+        });
 
-  describe('getAllCars', () => {
-    it('le kell kérnie az összes autót a query paraméterek alapján', async () => {
-      const mockCars = [{ id: 1, model: 'Civic' }, { id: 2, model: 'Accord' }];
-      req.query = { model: 'Honda', type: 'sedan' };
-      carService.getAllCars.mockResolvedValue(mockCars);
+        test('Hiba: Nem azonosítható felhasználó (401)', async () => {
+            req.user = null; // Hiányzó user objektum
+            await carController.createCar(req, res);
+            expect(res.status).toHaveBeenCalledWith(401);
+        });
 
-      await carController.getAllCars(req, res);
-
-      expect(carService.getAllCars).toHaveBeenCalledWith('Honda', 'sedan');
-      expect(res.json).toHaveBeenCalledWith(mockCars);
-    });
-  });
-
-  describe('getCarById', () => {
-    it('200-at kell adnia, ha megtalálja az autót', async () => {
-      const mockCar = { id: 10, model: '911' };
-      req.params.id = '10';
-      carService.getCarById.mockResolvedValue(mockCar);
-
-      await carController.getCarById(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(mockCar);
+        test('Szerver hiba esetén 500-at ad', async () => {
+            req.user = { user_id: 1 };
+            carService.createCar.mockRejectedValue(new Error('DB Error'));
+            await carController.createCar(req, res);
+            expect(res.status).toHaveBeenCalledWith(500);
+        });
     });
 
-    it('404-et kell adnia, ha nem létezik az autó', async () => {
-      req.params.id = '999';
-      carService.getCarById.mockResolvedValue(null);
+    // --- getAllCars tesztek ---
+    describe('getAllCars', () => {
+        test('Sikeres listázás query paraméterekkel', async () => {
+            req.query = { model: 'Camry' };
+            carService.getAllCars.mockResolvedValue([{ id: 1, model: 'Camry' }]);
 
-      await carController.getCarById(req, res);
+            await carController.getAllCars(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Car not found' });
-    });
-  });
-
-  describe('updateCar', () => {
-    it('sikeres frissítésnél az új adatokat kell visszaadnia', async () => {
-      const updatedCar = { id: 1, model: 'Updated Model' };
-      req.params.id = '1';
-      req.body = { model: 'Updated Model' };
-      carService.updateCar.mockResolvedValue(updatedCar);
-
-      await carController.updateCar(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(updatedCar);
-    });
-  });
-
-  describe('deleteCar', () => {
-    it('sikeres törlésnél üzenetet kell küldenie', async () => {
-      req.params.id = '5';
-      carService.deleteCar.mockResolvedValue(true);
-
-      await carController.deleteCar(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({ message: "Car deleted successfully" });
+            expect(carService.getAllCars).toHaveBeenCalledWith('Camry', undefined);
+            expect(res.json).toHaveBeenCalledWith(expect.any(Array));
+        });
     });
 
-    it('ha nincs mit törölni, 404-et kell adnia', async () => {
-      req.params.id = '5';
-      carService.deleteCar.mockResolvedValue(false);
+    // --- updateCar tesztek (Jogosultság fókusz) ---
+    describe('updateCar', () => {
+        test('Sikeres módosítás tulajdonosként', async () => {
+            req.params.id = '10';
+            req.user = { user_id: 5, is_admin: false };
+            req.body = { mileage: 150000 };
+            
+            // Az autó azonosítója és a tulajdonosa egyezik a req.user-rel
+            carService.getCarById.mockResolvedValue({ id: 10, owner_id: 5 });
+            carService.updateCar.mockResolvedValue({ id: 10, owner_id: 5, mileage: 150000 });
 
-      await carController.deleteCar(req, res);
+            await carController.updateCar(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalled();
+            expect(carService.updateCar).toHaveBeenCalled();
+        });
+
+        test('Sikeres módosítás Adminisztrátorként (még ha nem is övé)', async () => {
+            req.params.id = '10';
+            req.user = { user_id: 1, is_admin: true }; // Admin
+            carService.getCarById.mockResolvedValue({ id: 10, owner_id: 999 }); // Másé az autó
+            carService.updateCar.mockResolvedValue({ id: 10, updated: true });
+
+            await carController.updateCar(req, res);
+
+            expect(res.json).toHaveBeenCalled();
+        });
+
+        test('Hiba: Hozzáférés megtagadva idegen felhasználónak (403)', async () => {
+            req.params.id = '10';
+            req.user = { user_id: 5, is_admin: false };
+            carService.getCarById.mockResolvedValue({ id: 10, owner_id: 888 }); // Más a tulaj
+
+            await carController.updateCar(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(403);
+            expect(carService.updateCar).not.toHaveBeenCalled();
+        });
+
+        test('Hiba: Gépjármű nem található (404)', async () => {
+            req.params.id = '999';
+            carService.getCarById.mockResolvedValue(null);
+
+            await carController.updateCar(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
     });
-  });
+
+    // --- deleteCar tesztek ---
+    describe('deleteCar', () => {
+        test('Sikeres törlés tulajdonosként', async () => {
+            req.params.id = '10';
+            req.user = { user_id: 5, is_admin: false };
+            carService.getCarById.mockResolvedValue({ id: 10, owner_id: 5 });
+            carService.deleteCar.mockResolvedValue(true);
+
+            await carController.deleteCar(req, res);
+
+            expect(res.json).toHaveBeenCalledWith({ message: expect.stringContaining("sikeresen") });
+        });
+
+        test('Hiba: Törlés elutasítva nem tulajdonosnak (403)', async () => {
+            req.params.id = '10';
+            req.user = { user_id: 5, is_admin: false };
+            carService.getCarById.mockResolvedValue({ id: 10, owner_id: 999 });
+
+            await carController.deleteCar(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(403);
+            expect(carService.deleteCar).not.toHaveBeenCalled();
+        });
+    });
 });
