@@ -1,12 +1,14 @@
 import ServiceForm from './ServiceForm';
 import styles from './Service.module.css';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
 export const metadata = {
   title: 'Szerviz Időpontfoglalás | TorqueLab',
   description: 'Foglalj időpontot professzionális Ford szervizre, diagnosztikára vagy teljesítménynövelésre.',
 };
 
-export default function ServicePage() {
+export default async function ServicePage() {
   return (
     <main className={styles.serviceMain}>
       <section className="py-5 bg-dark">

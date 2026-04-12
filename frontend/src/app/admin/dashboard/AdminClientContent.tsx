@@ -12,6 +12,8 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [formData, setFormData] = useState<any>({});
+  const [comments, setComments] = useState<any[]>([]);
+  const [newComment, setNewComment] = useState(''); 
 
   // --- AUTOMATIKUS FRISSÍTÉS ---
   useEffect(() => {
@@ -35,9 +37,42 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
       parts: { name: '', manufacturer: '', part_number: '', price: 0, stock_quantity: 0, description: '' },
       users: { name: '', email: '', password: '', is_admin: 0 },
       cars: { vin: '', brand: '', model: '', production_year: new Date().getFullYear(), engine: '', mileage: 0, owner_id: '' },
-      logs: { car_id: '', description: '', performed_by: '', service_date: new Date().toISOString().split('T')[0] }
+      logs: { 
+        car_id: '', 
+        description: '', 
+        performed_by: '', 
+        service_date: new Date().toISOString().split('T')[0],
+        status: 'pending'
+      }
     };
     setFormData(defaultValues[activeView]);
+  };
+
+  const fetchComments = async (serviceId: number) => {
+    try {
+      const result = await apiRequest(`/service-logs/${serviceId}/comments`);
+      setComments(Array.isArray(result) ? result : []);
+    } catch (err) {
+      console.error("Komment hiba:", err);
+    }
+  };
+
+  const handleAddComment = async (serviceId: number) => {
+    if (!newComment.trim()) return;
+    try {
+      await apiRequest(`/service-comments`, {
+        method: 'POST',
+        body: JSON.stringify({
+          service_id: serviceId,
+          by_user: initialUser.user_id, // Az aktuális admin ID-ja
+          comment: newComment
+        })
+      });
+      setNewComment('');
+      fetchComments(serviceId); // Frissítés
+    } catch (err) {
+      alert("Hiba a komment mentésekor!");
+    }
   };
 
   const getEndpoint = () => {
@@ -134,9 +169,27 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
     }
   };
 
+  const formatDateForInput = (dateString: string | null | undefined) => {
+    if (!dateString) return '';
+    return dateString.split('T')[0];
+  };
+
   const openEdit = (item: any) => {
     setEditingItem(item);
-    setFormData(activeView === 'users' ? { ...item, password: '' } : { ...item });
+    
+    let preparedData = { ...item };
+
+    // Ha szerviznaplóról van szó, formázzuk a dátumot az inputnak megfelelően
+    if (activeView === 'logs' && item.service_date) {
+      preparedData.service_date = formatDateForInput(item.service_date);
+      fetchComments(getItemId(item));
+    }
+
+    if (activeView === 'users') {
+      preparedData.password = ''; // Jelszót ne töltsük be
+    }
+
+    setFormData(preparedData);
     setShowModal(true);
   };
 
@@ -265,13 +318,77 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
                   )}
 
                   {activeView === 'logs' && (
-                    <div className="row g-3">
-                      <div className="col-6"><label className="small text-secondary fw-bold text-uppercase">Autó belső ID</label><input type="number" className="form-control bg-black text-white border-secondary" value={formData.car_id || ''} onChange={(e) => setFormData({...formData, car_id: e.target.value})} required /></div>
-                      <div className="col-6"><label className="small text-secondary fw-bold text-uppercase">Szerviz dátuma</label><input type="date" className="form-control bg-black text-white border-secondary" value={formData.service_date || ''} onChange={(e) => setFormData({...formData, service_date: e.target.value})} required /></div>
-                      <div className="col-12"><label className="small text-secondary fw-bold text-uppercase">Munkavégző (Szerelő ID)</label><input type="number" className="form-control bg-black text-white border-secondary" value={formData.performed_by || ''} onChange={(e) => setFormData({...formData, performed_by: e.target.value})} required /></div>
-                      <div className="col-12"><label className="small text-secondary fw-bold text-uppercase">Elvégzett munka leírása</label><textarea className="form-control bg-black text-white border-secondary" rows={3} value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} required /></div>
-                    </div>
-                  )}
+  <div className="row g-3">
+    <div className="col-6">
+      <label className="small text-secondary fw-bold text-uppercase">Autó belső ID</label>
+      <input type="number" className="form-control bg-black text-white border-secondary" value={formData.car_id || ''} onChange={(e) => setFormData({...formData, car_id: e.target.value})} required />
+    </div>
+    <div className="col-6">
+      <label className="small text-secondary fw-bold text-uppercase">Státusz</label>
+      <select 
+        className="form-select bg-black text-white border-secondary" 
+        value={formData.status || 'pending'} 
+        onChange={(e) => setFormData({...formData, status: e.target.value})}
+      >
+        <option value="pending">Függőben</option>
+        <option value="in_progress">Folyamatban</option>
+        <option value="completed">Elkészült</option>
+        <option value="cancelled">Törölve</option>
+      </select>
+    </div>
+    <div className="col-6">
+      <label className="small text-secondary fw-bold text-uppercase">Szerviz dátuma</label>
+      <input type="date" className="form-control bg-black text-white border-secondary" value={formData.service_date || ''} onChange={(e) => setFormData({...formData, service_date: e.target.value})} required />
+    </div>
+    <div className="col-6">
+      <label className="small text-secondary fw-bold text-uppercase">Szerelő ID</label>
+      <input type="number" className="form-control bg-black text-white border-secondary" value={formData.performed_by || ''} onChange={(e) => setFormData({...formData, performed_by: e.target.value})} required />
+    </div>
+    <div className="col-12">
+      <label className="small text-secondary fw-bold text-uppercase">Leírás</label>
+      <textarea className="form-control bg-black text-white border-secondary" rows={2} value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} required />
+    </div>
+
+    {/* KOMMENT SZEKCIÓ - Csak szerkesztésnél látszik */}
+    {editingItem && (
+      <div className="col-12 mt-4 border-top border-secondary pt-3">
+        <h6 className="text-danger fw-bold text-uppercase small mb-3">Belső Megjegyzések (Comments)</h6>
+        
+        <div className="bg-black rounded p-2 mb-3" style={{ maxHeight: '150px', overflowY: 'auto' }}>
+          {comments.length === 0 ? (
+            <small className="text-secondary d-block text-center py-2">Nincs még megjegyzés.</small>
+          ) : (
+            comments.map((c, i) => (
+              <div key={i} className="border-bottom border-secondary border-opacity-25 mb-2 pb-1">
+                <div className="d-flex justify-content-between">
+                  <span className="text-danger small fw-bold">User #{c.by_user}</span>
+                </div>
+                <p className="m-0 small text-light">{c.comment}</p>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="input-group input-group-sm">
+          <input 
+            type="text" 
+            className="form-control bg-black text-white border-secondary" 
+            placeholder="Új megjegyzés írása..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+          <button 
+            className="btn btn-outline-danger" 
+            type="button" 
+            onClick={() => handleAddComment(getItemId(editingItem))}
+          >
+            Küldés
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+)}
                 </div>
                 <div className="modal-footer border-0 p-4 pt-0">
                   <button type="submit" className="btn btn-danger w-100 fw-bold py-2 shadow">MŰVELET VÉGREHAJTÁSA</button>

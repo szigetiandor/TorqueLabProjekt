@@ -16,6 +16,47 @@
     border-bottom: 2px solid #dc3545;
 }
 
+.kepegy {
+    background-image: url(a123.jpeg);
+     height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-weight: bold;
+    border: 1px dashed #444;
+    background-size: cover;
+    background-position: center;
+}
+
+
+
+.kepketto {
+    background-image: url(szepuma.png);
+     height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-weight: bold;
+    border: 1px dashed #444;
+    background-size: cover;
+    background-position: center;
+}
+
+.kepharom {
+    background-image: url(pumarally.jpg);
+     height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-weight: bold;
+    border: 1px dashed #444;
+    background-size: cover;
+    background-position: center;
+}
+
 
 .glitchText {
     font-size: 4rem;

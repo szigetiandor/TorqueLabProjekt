@@ -7,7 +7,8 @@
   "type": "commonjs",
   "main": "main.js",
   "scripts": {
-    "test": "jest --watchAll --verbose",
+    "test": "jest --verbose",
+    "test:watch": "jest --watch --verbose",
     "db": "sqlcmd -S localhost -U sa -P 'Faszom1326' -i src/scripts/torquelab.sql",
     "start": "node --watch src/main.js"
   },
@@ -22,10 +23,11 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mssql": "^12.2.0",
+    "multer": "^2.1.1",
     "tedious": "^19.2.0"
   },
   "devDependencies": {
-    "jest": "^30.2.0",
+    "jest": "^30.3.0",
     "supertest": "^7.2.2"
   }
 }

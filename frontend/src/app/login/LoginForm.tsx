@@ -1,7 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState,  } from 'react';
 import Link from 'next/link';
 import styles from './Login.module.css';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -9,7 +10,12 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  const redirectTo = searchParams.get('redirect');
+  const isRedirected = !!redirectTo;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +37,8 @@ export default function LoginForm() {
       }
 
       // redirect
-      window.location.href = '/catalog';
-
+      router.push(redirectTo || '/');
+      router.refresh();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -53,6 +59,19 @@ export default function LoginForm() {
       <h2 className={`text-center text-white ${styles.title}`}>
         LOGIN TO <span className="text-danger">TORQUELAB</span>
       </h2>
+
+      {isRedirected && !error && (
+        <div className="alert alert-info border-0 bg-dark text-info shadow-sm mb-4" role="alert">
+          <div className="d-flex align-items-center">
+            <span className="me-2">ℹ️</span>
+            <div>
+              <strong>Kért tartalom eléréséhez bejelentkezés szükséges.</strong>
+              <br />
+              <small className="opacity-75">Kérjük, adja meg hitelesítő adatait a folytatáshoz.</small>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className={`alert alert-danger ${styles.errorAlert} d-flex align-items-center`} role="alert">

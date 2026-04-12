@@ -8,7 +8,7 @@ const app = express()
 app.use(cors({
   origin: process.env.FRONTEND_URL, //localhost 3000
   credentials: true,               // süti kérés/fogadás true
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -20,5 +20,7 @@ app.use('/api/service-logs', require("./routes/serviceLog.routes"))
 app.use('/api/parts', require("./routes/part.routes"))
 app.use('/api/service-parts', require("./routes/servicePart.routes"))
 app.use('/api/auth', require("./routes/auth.routes"))
+app.use('/api/service-comments', require('./routes/serviceComment.routes'))
+app.use('/api/images', require('./routes/image.routes'))
 
 module.exports = app
