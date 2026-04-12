@@ -1,5 +1,21 @@
+/**
+ * @module ServiceCommentController
+ * @description Szerviznapló bejegyzésekhez tartozó megjegyzések (kommentek) kezeléséért felelős kontroller.
+ */
+
 const serviceCommentService = require('../services/serviceComment.service')
 
+/**
+ * Új megjegyzés létrehozása egy adott szerviznapló bejegyzéshez.
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {Object} req.body - A kérés törzse.
+ * @param {number} req.body.service_id - A kapcsolódó szerviznapló azonosítója.
+ * @param {string} req.body.comment - A megjegyzés szövege.
+ * @param {Object} req.user - A hitelesített felhasználó (szerelő/admin) adatai.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} A létrehozott megjegyzés objektuma JSON formátumban.
+ */
 exports.createServiceComment = async (req, res) => {
   try {
     const { service_id, comment } = req.body
@@ -22,6 +38,13 @@ exports.createServiceComment = async (req, res) => {
   }
 }
 
+/**
+ * Lekéri az összes rendszerben tárolt szervizmegjegyzést.
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} JSON lista az összes megjegyzésről.
+ */
 exports.getAllServiceComments = async (req, res) => {
   try {
     const serviceComments = await serviceCommentService.getAllServiceComments()
@@ -33,6 +56,14 @@ exports.getAllServiceComments = async (req, res) => {
   }
 }
 
+/**
+ * Egy specifikus szervizmegjegyzés lekérése azonosító alapján.
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {string} req.params.id - A megjegyzés egyedi azonosítója.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} JSON objektum a megjegyzés adataival.
+ */
 exports.getServiceCommentById = async (req, res) => {
   try {
     const {id} = req.params
@@ -50,13 +81,19 @@ exports.getServiceCommentById = async (req, res) => {
   }
 }
 
+/**
+ * Meglévő szervizmegjegyzés szövegének frissítése.
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {string} req.params.id - A frissítendő megjegyzés azonosítója.
+ * @param {string} req.body.comment - Az új megjegyzés szövege.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} A frissített megjegyzés objektuma.
+ */
 exports.updateServiceComment = async (req, res) => {
   try {
     const {comment} = req.body
     const {id} = req.params
-
-    //console.log(comment)
-    //console.log(id)
     
     if (!comment) {
       return res.status(400).json({error: 'comment is required'})
@@ -79,7 +116,15 @@ exports.updateServiceComment = async (req, res) => {
   }
 }
 
-exports.deleteServiceComment  = async (req, res) => {
+/**
+ * Szervizmegjegyzés végleges törlése.
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {string} req.params.id - A törlendő megjegyzés azonosítója.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} Sikerességet jelző JSON objektum.
+ */
+exports.deleteServiceComment = async (req, res) => {
   try {
     const {id} = req.params
 

@@ -1,5 +1,23 @@
+/**
+ * @module UserController
+ * @description Felhasználói fiókok kezeléséért felelős kontroller (CRUD műveletek).
+ */
+
 const userService = require('../services/user.service')
 
+/**
+ * Új felhasználó létrehozása (Regisztráció).
+ * Tartalmazza a kötelező mezők ellenőrzését és a jelszó komplexitási vizsgálatát.
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {Object} req.body - A felhasználó adatai.
+ * @param {string} req.body.name - A felhasználó teljes neve.
+ * @param {string} req.body.email - A felhasználó email címe.
+ * @param {string} req.body.password - A választott jelszó (min. 10 karakter).
+ * @param {boolean} [req.body.is_admin=false] - Adminisztrátori jogosultság beállítása.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} 201-es kód és a létrehozott felhasználó JSON objektuma.
+ */
 exports.createUser = async (req, res) => {
     try {
         const { name, email, password, is_admin } = req.body
@@ -12,7 +30,6 @@ exports.createUser = async (req, res) => {
             return res.status(400).json({ error: "Password needs to be at least 10 characters" })
         }
 
-        // Átadjuk az is_admin-t is (alapértelmezett a false/0)
         const user = await userService.createUser({ name, email, password, is_admin: is_admin || false })
         res.status(201).json(user)
     }
@@ -22,6 +39,13 @@ exports.createUser = async (req, res) => {
     }
 }
 
+/**
+ * Lekéri az összes regisztrált felhasználót a rendszerből.
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} JSON lista az összes felhasználóról.
+ */
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await userService.getAllUsers()
@@ -32,6 +56,14 @@ exports.getAllUsers = async (req, res) => {
     }
 }
 
+/**
+ * Egy konkrét felhasználó lekérése azonosító alapján.
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {string} req.params.id - A felhasználó egyedi azonosítója.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} JSON objektum a felhasználó adataival.
+ */
 exports.getUserById = async (req, res) => {
     try {
         const user = await userService.getUserById(req.params.id)
@@ -43,9 +75,17 @@ exports.getUserById = async (req, res) => {
     }
 }
 
+/**
+ * Meglévő felhasználó adatainak módosítása (Név, Email, Jelszó vagy Admin státusz).
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {string} req.params.id - A módosítandó felhasználó azonosítója.
+ * @param {Object} req.body - A frissítendő mezők.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} A frissített felhasználó adatai JSON-ben.
+ */
 exports.updateUser = async (req, res) => {
     try {
-        // Átvesszük az összes lehetséges mezőt
         const { name, email, password, is_admin } = req.body
         const updated = await userService.updateUser(req.params.id, { name, email, password, is_admin })
 
@@ -58,6 +98,14 @@ exports.updateUser = async (req, res) => {
     }
 }
 
+/**
+ * Felhasználói fiók végleges törlése a rendszerből.
+ * * @async
+ * @param {Object} req - Express kérés objektum.
+ * @param {string} req.params.id - A törlendő felhasználó azonosítója.
+ * @param {Object} res - Express válasz objektum.
+ * @returns {Promise<void>} Sikerüzenet vagy hibaüzenet.
+ */
 exports.deleteUser = async (req, res) => {
     try {
         const deleted = await userService.deleteUser(req.params.id)
