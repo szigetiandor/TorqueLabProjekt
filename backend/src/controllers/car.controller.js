@@ -1,24 +1,41 @@
 /**
  * @module CarController
- * @description Gépjárművek kezeléséért felelős kontroller (Létrehozás, Lekérdezés, Frissítés, Törlés).
+ * @description Gépjárművek kezeléséért felelős kontroller. 
+ * Implementálja a CRUD műveleteket és biztosítja a tulajdonosi szintű hozzáférés-szabályozást.
  */
 
 const carService = require("../services/car.service");
 
 /**
- * Új gépjárművet hoz létre az adatbázisban a bejelentkezett felhasználóhoz társítva.
+ * Belső segédfüggvény a jogosultság ellenőrzéséhez.
+ * @function hasCarAccess
+ * @private
+ * @param {Object} user - A hitelesített felhasználó objektuma (req.user).
+ * @param {number|string} user.user_id - A felhasználó azonosítója.
+ * @param {boolean} user.is_admin - Adminisztrátori státusz.
+ * @param {Object} car - Az adatbázisból lekérdezett autó objektum.
+ * @param {number|string} car.owner_id - Az autó tulajdonosának azonosítója.
+ * @returns {boolean} Igaz, ha a művelet engedélyezett.
+ */
+const hasCarAccess = (user, car) => {
+    return user.is_admin || String(user.user_id) === String(car.owner_id);
+};
+
+/**
+ * Új gépjármű létrehozása.
+ * A metódus automatikusan hozzárendeli a bejelentkezett felhasználót tulajdonosként.
  * * @async
- * @param {Object} req - Express kérés objektum.
- * @param {Object} req.user - A hitelesített felhasználó adatai (auth middleware-ből).
- * @param {number} req.user.user_id - A bejelentkezett tulajdonos azonosítója.
- * @param {Object} req.body - Az autó adatai (vin, brand, model, production_year stb.).
- * @param {Object} res - Express válasz objektum.
- * @returns {Promise<void>} 201-es státuszkód és a létrehozott autó objektuma JSON formátumban.
+ * @function createCar
+ * @param {Object} req - Express request objektum.
+ * @param {Object} req.user - Auth middleware által feltöltött felhasználói adatok.
+ * @param {Object} req.body - Gépjármű adatai (vin, brand, model, production_year stb.).
+ * @param {Object} res - Express response objektum.
+ * @returns {Promise<void>} 201-es státusz és a létrehozott autó, vagy hibaüzenet.
  */
 exports.createCar = async (req, res) => {
     try {
         if (!req.user || !req.user.user_id) {
-            return res.status(401).json({ error: "Nem azonosítható felhasználó!" });
+            return res.status(401).json({ error: "Nem azonosítható felhasználó! Kérjük, jelentkezzen be." });
         }
 
         const carData = {
@@ -30,24 +47,26 @@ exports.createCar = async (req, res) => {
             mileage: req.body.mileage,
             for_sale: req.body.for_sale || 0,
             price: req.body.price || 0,
-            owner_id: req.user.user_id
+            owner_id: req.user.user_id 
         };
 
         const car = await carService.createCar(carData);
         res.status(201).json(car);
     } catch (err) {
-        console.error("Hiba az autó mentésekor:", err.message);
         res.status(500).json({ error: err.message });
     }
 };
 
 /**
- * Lekéri az összes gépjárművet a rendszerből, opcionális szűrési feltételekkel.
+ * Az összes gépjármű listázása szűrési lehetőséggel.
  * * @async
- * @param {Object} req - Express kérés objektum.
- * @param {Object} req.query - Query paraméterek a szűréshez (pl. model, type).
- * @param {Object} res - Express válasz objektum.
- * @returns {Promise<void>} JSON lista a járművekről.
+ * @function getAllCars
+ * @param {Object} req - Express request objektum.
+ * @param {Object} req.query - Query paraméterek.
+ * @param {string} [req.query.model] - Szűrés modell alapján.
+ * @param {string} [req.query.type] - Szűrés típus alapján.
+ * @param {Object} res - Express response objektum.
+ * @returns {Promise<void>} JSON lista az autókról.
  */
 exports.getAllCars = async (req, res) => {
   try {
@@ -60,17 +79,18 @@ exports.getAllCars = async (req, res) => {
 };
 
 /**
- * Egy specifikus gépjármű lekérése azonosító alapján.
+ * Egy gépjármű adatainak lekérése azonosító alapján.
  * * @async
- * @param {Object} req - Express kérés objektum.
- * @param {string} req.params.id - Az autó egyedi azonosítója (ID).
- * @param {Object} res - Express válasz objektum.
- * @returns {Promise<void>} JSON objektum az autó adataival vagy 404 hiba.
+ * @function getCarById
+ * @param {Object} req - Express request objektum.
+ * @param {string} req.params.id - Az autó azonosítója az URL-ből.
+ * @param {Object} res - Express response objektum.
+ * @returns {Promise<void>} Az autó adatai vagy 404-es hiba.
  */
 exports.getCarById = async (req, res) => {
   try {
     const car = await carService.getCarById(req.params.id);
-    if (!car) return res.status(404).json({ error: "Car not found" });
+    if (!car) return res.status(404).json({ error: "Gépjármű nem található." });
     res.json(car);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -78,19 +98,27 @@ exports.getCarById = async (req, res) => {
 };
 
 /**
- * Meglévő gépjármű adatainak módosítása.
+ * Gépjármű adatainak frissítése.
+ * Csak az autó tulajdonosa vagy adminisztrátor hajthatja végre.
  * * @async
- * @param {Object} req - Express kérés objektum.
+ * @function updateCar
+ * @param {Object} req - Express request objektum.
  * @param {string} req.params.id - Az autó azonosítója.
- * @param {Object} req.body - A frissítendő adatok.
- * @param {Object} res - Express válasz objektum.
- * @returns {Promise<void>} A frissített autó objektuma JSON-ben.
+ * @param {Object} req.body - A frissítendő mezők.
+ * @param {Object} res - Express response objektum.
+ * @returns {Promise<void>} A frissített objektum vagy 403-as hiba jogosultság hiányában.
  */
 exports.updateCar = async (req, res) => {
   try {
-    const car = await carService.updateCar(req.params.id, req.body);
-    if (!car) return res.status(404).json({ error: "Car not found" });
-    res.json(car);
+    const car = await carService.getCarById(req.params.id);
+    if (!car) return res.status(404).json({ error: "Gépjármű nem található." });
+
+    if (!hasCarAccess(req.user, car)) {
+        return res.status(403).json({ error: "Hozzáférés megtagadva! Csak a saját autóidat módosíthatod." });
+    }
+
+    const updatedCar = await carService.updateCar(req.params.id, req.body);
+    res.json(updatedCar);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -98,17 +126,25 @@ exports.updateCar = async (req, res) => {
 
 /**
  * Gépjármű törlése a rendszerből.
+ * Csak az autó tulajdonosa vagy adminisztrátor hajthatja végre.
  * * @async
- * @param {Object} req - Express kérés objektum.
+ * @function deleteCar
+ * @param {Object} req - Express request objektum.
  * @param {string} req.params.id - Az autó azonosítója.
- * @param {Object} res - Express válasz objektum.
- * @returns {Promise<void>} Sikerüzenet JSON formátumban.
+ * @param {Object} res - Express response objektum.
+ * @returns {Promise<void>} Sikerüzenet vagy hibaüzenet.
  */
 exports.deleteCar = async (req, res) => {
   try {
-    const deleted = await carService.deleteCar(req.params.id);
-    if (!deleted) return res.status(404).json({ error: "Car not found" });
-    res.json({ message: "Car deleted successfully" });
+    const car = await carService.getCarById(req.params.id);
+    if (!car) return res.status(404).json({ error: "Gépjármű nem található." });
+
+    if (!hasCarAccess(req.user, car)) {
+        return res.status(403).json({ error: "Hozzáférés megtagadva! Csak a saját autóidat törölheted." });
+    }
+
+    await carService.deleteCar(req.params.id);
+    res.json({ message: "Gépjármű sikeresen törölve." });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
