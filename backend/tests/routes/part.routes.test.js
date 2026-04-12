@@ -2,76 +2,138 @@ const request = require('supertest');
 const express = require('express');
 const partRoutes = require('../../src/routes/part.routes');
 const partController = require('../../src/controllers/part.controller');
+const authMiddleware = require('../../src/middleware/auth.middleware');
 
-
+// Kontroller és Middleware mockolása
 jest.mock('../../src/controllers/part.controller');
+jest.mock('../../src/middleware/auth.middleware');
 
 const app = express();
 app.use(express.json());
 app.use('/parts', partRoutes);
 
-describe('Part Routes', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+describe('Part Routes Unit Tests', () => {
 
-  describe('POST /parts', () => {
-    it('meg kell hívnia a partController.createPart-t', async () => {
-      partController.createPart.mockImplementation((req, res) => res.status(201).json({ id: 1 }));
+    beforeEach(() => {
+        jest.clearAllMocks();
 
-      const res = await request(app)
-        .post('/parts')
-        .send({ name: 'Féktárcsa', manufacturer: 'Brembo' });
+        // Alapértelmezett viselkedés: a token érvényes, de a felhasználó NEM admin
+        authMiddleware.verifyToken.mockImplementation((req, res, next) => {
+            req.user = { user_id: 100, is_admin: false };
+            next();
+        });
 
-      expect(res.statusCode).toBe(201);
-      expect(partController.createPart).toHaveBeenCalled();
+        // Admin ellenőrzés elutasítása sima felhasználó esetén
+        authMiddleware.verifyAdmin.mockImplementation((req, res, next) => {
+            if (req.user && req.user.is_admin) {
+                next();
+            } else {
+                res.status(403).json({ error: "Admin jogosultság szükséges" });
+            }
+        });
     });
-  });
 
-  describe('GET /parts', () => {
-    it('meg kell hívnia a partController.getAllParts-t', async () => {
-      partController.getAllParts.mockImplementation((req, res) => res.status(200).json([]));
+    // --- PUBLIKUS ÚTVONALAK (GET) ---
 
-      const res = await request(app).get('/parts');
+    describe('GET /parts', () => {
+        test('Összes alkatrész listázása - Token nélkül is elérhető (Public)', async () => {
+            partController.getAllParts.mockImplementation((req, res) => res.status(200).json([]));
 
-      expect(res.statusCode).toBe(200);
-      expect(partController.getAllParts).toHaveBeenCalled();
+            const res = await request(app).get('/parts');
+
+            expect(res.statusCode).toBe(200);
+            expect(partController.getAllParts).toHaveBeenCalled();
+            // Ellenőrizzük, hogy a middleware-ek NEM hívódtak meg
+            expect(authMiddleware.verifyToken).not.toHaveBeenCalled();
+        });
+
+        test('Egy alkatrész lekérése ID alapján - Token nélkül is elérhető (Public)', async () => {
+            partController.getPartById.mockImplementation((req, res) => res.status(200).json({ id: 1, name: 'Fékbetét' }));
+
+            const res = await request(app).get('/parts/1');
+
+            expect(res.statusCode).toBe(200);
+            expect(partController.getPartById).toHaveBeenCalled();
+        });
     });
-  });
 
-  describe('GET /parts/:id', () => {
-    it('meg kell hívnia a partController.getPartById-t', async () => {
-      partController.getPartById.mockImplementation((req, res) => res.status(200).json({ id: req.params.id }));
+    // --- VÉDETT ÚTVONALAK (POST, PUT, DELETE) ---
 
-      const res = await request(app).get('/parts/100');
+    describe('POST /parts (Admin Only)', () => {
+        test('Edge Case: Sima felhasználó (nem admin) elutasítása (403)', async () => {
+            const res = await request(app)
+                .post('/parts')
+                .send({ name: 'Új alkatrész', price: 5000 });
 
-      expect(res.statusCode).toBe(200);
-      expect(res.body.id).toBe('100');
-      expect(partController.getPartById).toHaveBeenCalled();
+            expect(res.statusCode).toBe(403);
+            expect(partController.createPart).not.toHaveBeenCalled();
+        });
+
+        test('Sikeres létrehozás Admin fiókkal (201)', async () => {
+            // Admin státusz beállítása a mockban
+            authMiddleware.verifyToken.mockImplementation((req, res, next) => {
+                req.user = { user_id: 1, is_admin: true };
+                next();
+            });
+            partController.createPart.mockImplementation((req, res) => res.status(201).json({ id: 99 }));
+
+            const res = await request(app)
+                .post('/parts')
+                .send({ name: 'Admin alkatrész', price: 10000 });
+
+            expect(res.statusCode).toBe(201);
+            expect(partController.createPart).toHaveBeenCalled();
+        });
     });
-  });
 
-  describe('PUT /parts/:id', () => {
-    it('meg kell hívnia a partController.updatePart-t', async () => {
-      partController.updatePart.mockImplementation((req, res) => res.status(200).json({ updated: true }));
+    describe('PUT /parts/:id (Admin Only)', () => {
+        test('Módosítás tiltása sima felhasználónak (403)', async () => {
+            const res = await request(app)
+                .put('/parts/1')
+                .send({ stock: 50 });
 
-      const res = await request(app)
-        .put('/parts/100')
-        .send({ price: 25000 });
+            expect(res.statusCode).toBe(403);
+            expect(partController.updatePart).not.toHaveBeenCalled();
+        });
 
-      expect(res.statusCode).toBe(200);
-      expect(partController.updatePart).toHaveBeenCalled();
+        test('Sikeres módosítás Admin fiókkal (200)', async () => {
+            authMiddleware.verifyToken.mockImplementation((req, res, next) => {
+                req.user = { user_id: 1, is_admin: true };
+                next();
+            });
+            partController.updatePart.mockImplementation((req, res) => res.status(200).json({ updated: true }));
+
+            const res = await request(app).put('/parts/1').send({ stock: 50 });
+
+            expect(res.statusCode).toBe(200);
+            expect(partController.updatePart).toHaveBeenCalled();
+        });
     });
-  });
 
-  describe('DELETE /parts/:id', () => {
-    it('meg kell hívnia a partController.deletePart-t', async () => {
-      partController.deletePart.mockImplementation((req, res) => res.status(200).json({ success: true }));
+    describe('DELETE /parts/:id (Admin Only)', () => {
+        test('Törlés elutasítása érvénytelen vagy hiányzó token esetén (401)', async () => {
+            // Szimuláljuk a verifyToken hibáját
+            authMiddleware.verifyToken.mockImplementation((req, res, next) => {
+                return res.status(401).json({ error: "Érvénytelen token" });
+            });
 
-      const res = await request(app).delete('/parts/100');
+            const res = await request(app).delete('/parts/1');
 
-      expect(res.statusCode).toBe(200);
-      expect(partController.deletePart).toHaveBeenCalled();
+            expect(res.statusCode).toBe(401);
+            expect(partController.deletePart).not.toHaveBeenCalled();
+        });
+
+        test('Sikeres törlés Admin fiókkal', async () => {
+            authMiddleware.verifyToken.mockImplementation((req, res, next) => {
+                req.user = { user_id: 1, is_admin: true };
+                next();
+            });
+            partController.deletePart.mockImplementation((req, res) => res.status(200).json({ deleted: true }));
+
+            const res = await request(app).delete('/parts/1');
+
+            expect(res.statusCode).toBe(200);
+            expect(partController.deletePart).toHaveBeenCalled();
+        });
     });
-  });
 });
