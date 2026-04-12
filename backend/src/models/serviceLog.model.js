@@ -53,4 +53,26 @@ exports.remove = async (id) => {
   return result.rowsAffected[0] > 0
 }
 
+exports.findByOwnerId = async (ownerId) => {
+    try {
+        let pool = await getPool();
+        let result = await pool.request()
+            .input('ownerId', ownerId)
+            .query(`
+                SELECT 
+                    sl.*, 
+                    c.brand, c.model, c.vin,
+                    u_worker.name as worker_name
+                FROM service_log sl
+                JOIN car c ON sl.car_id = c.car_id
+                LEFT JOIN [user] u_worker ON sl.performed_by = u_worker.user_id
+                WHERE c.owner_id = @ownerId
+                ORDER BY sl.service_date DESC
+            `);
+        return result.recordset;
+    } catch (err) {
+        throw err;
+    }
+}
+
 exports.ServiceLog = ServiceLog;

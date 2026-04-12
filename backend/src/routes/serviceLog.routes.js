@@ -3,6 +3,8 @@ const router = express.Router();
 const serviceLogController = require("../controllers/serviceLog.controller")
 const authMiddleware = require("../middleware/auth.middleware")
 
+router.get('/my', authMiddleware.verifyToken, serviceLogController.getMyServiceLogs);
+
 router.post("/", serviceLogController.createServiceLog);
 router.get("/", serviceLogController.getAllServiceLogs);
 router.get("/:id", serviceLogController.getServiceLogById);

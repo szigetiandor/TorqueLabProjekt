@@ -48,7 +48,6 @@ export default function HeaderClient({ user }: { user: any }) {
 
           <div className={`${styles.menuWrapper} ${isOpen ? styles.open : ''}`}>
             <ul className="navbar-nav mx-auto align-items-lg-center">
-              <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/" onClick={closeMenu}>Főoldal</Link></li>
               <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/service" onClick={closeMenu}>Szervíz</Link></li>
               
               {/* Ez visz a katalógushoz */}
@@ -108,6 +107,7 @@ export default function HeaderClient({ user }: { user: any }) {
                   <button onClick={handleLogout} className="btn btn-outline-secondary btn-sm px-3 rounded-pill fw-bold">Kijelentkezés</button>
                 </div>
               )}
+              <Link href="/my-services" className="btn btn-outline-danger btn-sm px-4 rounded-pill fw-bold ms-lg-2" onClick={closeMenu}>Szervizeléseim</Link>
               <Link href="/contact" className="btn btn-outline-danger btn-sm px-4 rounded-pill fw-bold ms-lg-2" onClick={closeMenu}>Kontakt</Link>
             </div>
           </div>

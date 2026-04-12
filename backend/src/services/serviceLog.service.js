@@ -25,3 +25,8 @@ exports.getCommentsByServiceId = async (serviceId) => {
     const comments = await serviceCommentModel.findByServiceId(serviceId);  
     return comments;
 };
+
+exports.getLogsByOwner = async (ownerId) => {
+  const logs = await serviceLogModel.findByOwnerId(ownerId);
+  return logs;
+}

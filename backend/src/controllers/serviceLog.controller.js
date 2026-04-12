@@ -114,3 +114,13 @@ exports.deleteServiceLog = async (req, res) => {
     res.status(500).json({error: err.message})
   }
 }
+
+exports.getMyServiceLogs = async (req, res) => {
+    try {
+        const userId = req.user.user_id;
+        const logs = await serviceLogService.getLogsByOwner(userId);
+        res.json(logs);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
