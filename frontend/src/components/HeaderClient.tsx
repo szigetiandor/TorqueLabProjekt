@@ -38,8 +38,13 @@ export default function HeaderClient({ user }: { user: any }) {
         <div className="container-fluid">
           
           <Link href="/" className="navbar-brand d-flex align-items-center ms-lg-4" onClick={closeMenu}>
-            <div className={styles.logoBox}>TL</div>
-            <span className={`ms-2 text-white ${styles.brandText}`}>Torque<span className="text-danger">Lab</span></span>
+            <div className={styles.logoWrapper}> 
+              <img 
+                src="logo_kicsi_vegleges.png" 
+                alt="TorqueLab" 
+                className={styles.mainLogo} 
+              />
+            </div>
           </Link>
 
           <button className="navbar-toggler border-0" type="button" onClick={() => setIsOpen(!isOpen)}>
