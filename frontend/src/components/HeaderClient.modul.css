@@ -1,0 +1,12 @@
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainLogo {
+  height: 10px; 
+  width: auto;  
+  display: block;
+  object-fit: contain;
+}
