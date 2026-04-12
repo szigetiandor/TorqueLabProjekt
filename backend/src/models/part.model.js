@@ -1,6 +1,18 @@
+/**
+ * @module PartModel
+ * @description Alkatrészek adatstruktúráját és raktárkészlet-műveleteit (DAO) tartalmazó modul.
+ */
+
 const { getPool } = require("../database");
 
+/**
+ * Alkatrész entitás osztály.
+ * Strukturált formátumban tárolja a raktári tételek adatait.
+ */
 class Part {
+  /**
+   * @param {Object} params - Az alkatrész tulajdonságai.
+   */
   constructor({part_id, name, manufacturer, part_number, price, stock_quantity, description}) {
     this.part_id = part_id;
     this.name = name;
@@ -12,22 +24,29 @@ class Part {
   }
 }
 
-// MINDEN LISTÁZÁS ÉS SZŰRÉS EGYBEN
+/**
+ * Alkatrészek keresése és listázása dinamikus szűréssel.
+ * @async
+ * @param {string} [searchQuery] - Keresési kulcsszó (név, gyártó vagy leírás alapján).
+ * @param {number} [maxPrice] - Maximális eladási ár szerinti korlátozás.
+ * @returns {Promise<Part[]>} A keresési feltételeknek megfelelő Part objektumok tömbje.
+ */
 exports.findAll = async (searchQuery, maxPrice) => {
   const pool = await getPool();
   const request = pool.request();
   
-  // Alap: minden terméket kérünk
+  // Alap lekérdezés: minden terméket kérünk (1=1 a dinamikus AND fűzéshez)
   let sql = "SELECT * FROM part WHERE 1=1";
 
-  // SZŰRÉS 1: Ha kaptunk keresőszót vagy autót
+  // SZŰRÉS: Keresőszó (fuzzy search több mezőben)
   if (searchQuery && searchQuery !== 'all' && searchQuery !== '') {
+    // Kötőjelek cseréje szóközre a kereshetőség javításáért
     const cleanQuery = searchQuery.replace(/-/g, ' ');
     request.input("search", `%${cleanQuery}%`);
     sql += " AND ([name] LIKE @search OR manufacturer LIKE @search OR [description] LIKE @search)";
   }
 
-  // SZŰRÉS 2: Maximális ár
+  // SZŰRÉS: Maximális ár limit
   if (maxPrice) {
     request.input("maxPrice", maxPrice);
     sql += " AND price <= @maxPrice";
@@ -37,7 +56,12 @@ exports.findAll = async (searchQuery, maxPrice) => {
   return result.recordset.map(x => new Part(x));
 }
 
-// Létrehozás
+/**
+ * Új alkatrész rögzítése az adatbázisba.
+ * @async
+ * @param {Object} part - Az új alkatrész adatai.
+ * @returns {Promise<Part>} A létrehozott alkatrész objektuma.
+ */
 exports.create = async (part) => {
   const pool = await getPool();
   const result = await pool
@@ -53,14 +77,22 @@ exports.create = async (part) => {
   return new Part(result.recordset[0]);
 }
 
-// Egy darab lekérése
+/**
+ * Egy alkatrész lekérése ID alapján.
+ * @async
+ * @param {number|string} id - Az alkatrész azonosítója.
+ * @returns {Promise<Part|null>} A megtalált alkatrész vagy null.
+ */
 exports.findById = async (id) => {
   const pool = await getPool();
   const result = await pool.request().input("id", id).query("SELECT * FROM part WHERE part_id = @id");
   return result.recordset[0] ? new Part(result.recordset[0]) : null;
 }
 
-// Frissítés
+/**
+ * Meglévő alkatrész adatainak (pl. ár vagy raktárkészlet) módosítása.
+ * @async
+ */
 exports.update = async (id, part) => {
   const pool = await getPool();
   const result = await pool
@@ -78,7 +110,12 @@ exports.update = async (id, part) => {
   return result.recordset[0] ? new Part(result.recordset[0]) : null;
 }
 
-// Törlés
+/**
+ * Alkatrész törlése az adatbázisból.
+ * @async
+ * @param {number|string} id - Az alkatrész azonosítója.
+ * @returns {Promise<boolean>} Igaz, ha a törlés sikeres volt.
+ */
 exports.remove = async (id) => {
   const pool = await getPool();
   const result = await pool.request().input("id", id).query("DELETE FROM part WHERE part_id=@id");
