@@ -26,15 +26,15 @@ export default function ServiceForm() {
   useEffect(() => {
     const fetchParts = async () => {
       try {
-        const res = await apiRequest('/parts');
-        if (res.ok) {
-          const data = await res.json();
+        const data = await apiRequest('/parts');
+        if (data) {
           setAvailableParts(data);
         }
       } catch (err) {
         console.error(`Nem sikerült betölteni az alkatrészeket: ${err.message}`);
       }
     };
+
     fetchParts();
   }, []);
 
