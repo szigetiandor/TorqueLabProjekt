@@ -103,8 +103,8 @@ CREATE TABLE [image] (
 GO
 
 INSERT INTO [user] (name, email, password_hash, is_admin) VALUES
-('Admin', 'admin@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 1),
-('Teszt Elek', 'teszt@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 0),
+('Admin', 'admin@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 1), -- password: 0123456789
+('Teszt Elek', 'teszt@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 0), -- password: 0123456789
 
 
 INSERT INTO car
