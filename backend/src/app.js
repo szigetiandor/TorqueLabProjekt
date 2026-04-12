@@ -8,7 +8,7 @@ const app = express()
 app.use(cors({
   origin: process.env.FRONTEND_URL, //localhost 3000
   credentials: true,               // süti kérés/fogadás true
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 

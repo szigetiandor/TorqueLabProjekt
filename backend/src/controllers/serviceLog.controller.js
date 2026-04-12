@@ -26,6 +26,22 @@ exports.createServiceLog = async (req, res) => {
   }
 }
 
+exports.getServiceComments = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ error: "Service ID is required" });
+        }
+
+        const comments = await serviceLogService.getCommentsByServiceId(id);
+        res.status(200).json(comments);
+    } catch (err) {
+        console.error("Error fetching comments:", err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
 exports.getAllServiceLogs = async (req, res) => {
   try {
     const services = await serviceLogService.getAllServices()

@@ -1,4 +1,5 @@
 const serviceLogModel = require("../models/serviceLog.model")
+const serviceCommentModel = require("../models/serviceComment.model")
 
 exports.createService = async (data) => {
   return await serviceLogModel.create(data)
@@ -19,3 +20,8 @@ exports.updateService = async (id, data) => {
 exports.deleteService = async (id) => {
   return await serviceLogModel.remove(id)
 }
+
+exports.getCommentsByServiceId = async (serviceId) => {
+    const comments = await serviceCommentModel.findByServiceId(serviceId);  
+    return comments;
+};

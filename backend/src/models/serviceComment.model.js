@@ -44,3 +44,23 @@ exports.remove = async (id) => {
   const result = await pool.request().input("id", id).query("DELETE FROM service_comment WHERE service_comment_id=@id");
   return result.rowsAffected[0] > 0
 }
+
+exports.findByServiceId = async (serviceId) => {
+      let pool = await getPool();
+      let result = await pool.request()
+        .input('serviceId', serviceId)
+        .query(`
+          SELECT 
+            sc.service_comment_id,
+            sc.comment,
+            sc.by_user,
+            u.name as user_name,
+            sc.service_id
+          FROM service_comment sc
+          JOIN [user] u ON sc.by_user = u.user_id
+          WHERE sc.service_id = @serviceId
+          ORDER BY sc.service_comment_id DESC
+        `);
+      
+      return result.recordset;
+  }
