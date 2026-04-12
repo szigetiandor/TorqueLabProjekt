@@ -17,13 +17,15 @@ class ServiceLog {
    * @param {number} params.performed_by - Idegen kulcs a szerelőhöz (User).
    * @param {string|Date} params.service_date - A szervizelés dátuma.
    * @param {string} params.description - A munka leírása.
+   * @param {string} params.status - A munka státusza.
    */
-  constructor({ service_id, car_id, performed_by, service_date, description }) {
+  constructor({ service_id, car_id, performed_by, service_date, description, status }) {
     this.service_id = service_id;
     this.car_id = car_id;
     this.service_date = service_date;
     this.description = description;
     this.performed_by = performed_by;
+    this.status = status;
   }
 }
 
@@ -54,7 +56,9 @@ exports.create = async (serviceLog) => {
 exports.findAll = async () => {
   const pool = await getPool();
   const result = await pool.request().query("SELECT * FROM service_log");
-  return result.recordset.map(x => new ServiceLog(x))
+  const res =  result.recordset.map(x => new ServiceLog(x))
+  console.log(`DB-ben: ${JSON.stringify(res)}`)
+  return res
 }
 
 /**
@@ -77,6 +81,7 @@ exports.findById = async (id) => {
  * @returns {Promise<ServiceLog|null>}
  */
 exports.update = async (id, serviceLog) => {
+  console.log(serviceLog.status);
   const pool = await getPool();
   const result = await pool
     .request()
@@ -85,8 +90,11 @@ exports.update = async (id, serviceLog) => {
     .input("performed_by", serviceLog.performed_by)
     .input("service_date", serviceLog.service_date)
     .input("description", serviceLog.description)
-    .query(`UPDATE service_log SET car_id=@car_id, performed_by=@performed_by, service_date=@service_date, [description]=@description 
+    .input("status", serviceLog.status)
+    .query(`UPDATE service_log SET car_id=@car_id, [status]=@status, performed_by=@performed_by, service_date=@service_date, [description]=@description 
             OUTPUT INSERTED.* WHERE service_id=@id`);
+
+  console.log("DB-ből visszatérő adat:", result.recordset[0]);
   return result.recordset[0] ? new ServiceLog(result.recordset[0]) : null
 }
 

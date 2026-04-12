@@ -29,7 +29,7 @@ exports.createServiceLog = async (req, res) => {
     }
 
     // Alapértelmezetten az 1-es ID-jú adminisztrátort rendeljük hozzá, ha nincs megadva
-    const service = await serviceLogService.createService({car_id, performed_by: 1, service_date, description})
+    const service = await serviceLogService.createService({car_id, performed_by: 1, service_date, status, description})
 
     res.status(201).json(service)
   }
@@ -110,13 +110,15 @@ exports.getServiceLogById = async (req, res) => {
  */
 exports.updateServiceLog = async (req, res) => {
   try {
-    const { car_id, performed_by, service_date, description } = req.body;
+    const { car_id, performed_by, service_date, description, status } = req.body;
 
-    if (!car_id || !performed_by || !service_date) {
+    if (!car_id || !performed_by || !service_date || !status) {
       return res.status(400).json({error: "Missing required fields"})
     }
 
-    const service = await serviceLogService.updateService(req.params.id, { car_id, performed_by, service_date, description })
+    console.log(JSON.stringify(req.body))
+
+    const service = await serviceLogService.updateService(req.params.id, { car_id, performed_by, service_date, description, status })
 
     if (!service) {
       return res.status(404).json({error: "ServiceLog not found"})
