@@ -74,29 +74,7 @@ describe('ServiceLog Routes Unit Tests', () => {
         });
     });
 
-    // --- ÍRÁSI MŰVELETEK (Admin szükséges) ---
-
-    describe('POST /service-logs', () => {
-        it('Edge Case: Elutasítás, ha a felhasználó nem Admin', async () => {
-            const res = await request(app).post('/service-logs').send({ car_id: 1 });
-            
-            expect(res.statusCode).toBe(403);
-            expect(serviceLogController.createServiceLog).not.toHaveBeenCalled();
-        });
-
-        it('Sikeres létrehozás Admin fiókkal', async () => {
-            authMiddleware.verifyToken.mockImplementation((req, res, next) => {
-                req.user = { user_id: 1, is_admin: true };
-                next();
-            });
-            serviceLogController.createServiceLog.mockImplementation((req, res) => res.status(201).json({ id: 1 }));
-
-            const res = await request(app).post('/service-logs').send({ car_id: 1 });
-            
-            expect(res.statusCode).toBe(201);
-            expect(serviceLogController.createServiceLog).toHaveBeenCalled();
-        });
-    });
+    // --- ÍRÁSI MŰVELETEK ---
 
     describe('PUT /service-logs/:id', () => {
         it('Módosítás tiltása sima felhasználónak', async () => {

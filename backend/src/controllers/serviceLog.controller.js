@@ -29,7 +29,7 @@ exports.createServiceLog = async (req, res) => {
     }
 
     // Alapértelmezetten az 1-es ID-jú adminisztrátort rendeljük hozzá, ha nincs megadva
-    const service = await serviceLogService.createService({car_id, performed_by: 1, service_date, status, description})
+    const service = await serviceLogService.createService({car_id, performed_by: 1, service_date, description})
 
     res.status(201).json(service)
   }

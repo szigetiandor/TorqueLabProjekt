@@ -26,8 +26,8 @@ describe('ServiceLogController Unit Tests', () => {
     // --- createServiceLog ---
     describe('createServiceLog', () => {
         test('Sikeres létrehozás (201)', async () => {
-            req.body = { car_id: 1, service_date: '2024-03-20', description: 'Olajcsere' };
-            serviceLogService.createService.mockResolvedValue({ id: 100, ...req.body });
+            req.body = { car_id: 1, service_date: '2024-03-20', description: 'Olajcsere', status: 'Pending' };
+            serviceLogService.createService.mockResolvedValue({ id: 100, ...req.body, performed_by: 1 });
 
             await serviceLogController.createServiceLog(req, res);
 
@@ -99,7 +99,7 @@ describe('ServiceLogController Unit Tests', () => {
     describe('updateServiceLog', () => {
         test('Sikeres módosítás (200)', async () => {
             req.params.id = '1';
-            req.body = { car_id: 1, performed_by: 2, service_date: '2024-01-01', description: 'Javítva' };
+            req.body = { car_id: 1, performed_by: 2, service_date: '2024-01-01', description: 'Javítva', status: 'Completed' };
             serviceLogService.updateService.mockResolvedValue({ id: 1, ...req.body });
 
             await serviceLogController.updateServiceLog(req, res);
