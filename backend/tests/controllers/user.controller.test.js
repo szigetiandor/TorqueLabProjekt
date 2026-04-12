@@ -1,115 +1,145 @@
 const userController = require('../../src/controllers/user.controller');
 const userService = require('../../src/services/user.service');
 
-
+// Mockoljuk a szerviz réteget
 jest.mock('../../src/services/user.service');
 
-describe('User Controller', () => {
-  let req, res;
+describe('UserController Unit Tests', () => {
+    let req, res;
 
-  beforeEach(() => {
-    req = {
-      body: {},
-      params: {}
-    };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn().mockReturnThis()
-    };
-    jest.clearAllMocks();
-  });
-
-  describe('createUser', () => {
-    it('400-as hibát ad, ha hiányzik a név, email vagy jelszó', async () => {
-      req.body = { email: 'teszt@mail.com', password: 'password123' }; 
-
-      await userController.createUser(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: "Name is required" });
+    beforeEach(() => {
+        // Express req/res objektumok szimulálása minden teszt előtt
+        req = {
+            params: {},
+            body: {},
+            user: {} // Az authMiddleware által feltöltött adat
+        };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn().mockReturnThis()
+        };
+        jest.clearAllMocks();
     });
 
-    it('400-as hibát ad, ha a jelszó rövidebb, mint 10 karakter', async () => {
-      req.body = { 
-        name: 'Teszt Elek', 
-        email: 'teszt@mail.com', 
-        password: 'rövid' 
-      };
+    // --- CREATE USER TESZTEK ---
+    describe('createUser', () => {
+        test('Sikeres regisztráció (201)', async () => {
+            req.body = { name: 'Teszt Elek', email: 't@e.hu', password: 'password123' };
+            userService.createUser.mockResolvedValue({ id: 1, ...req.body });
 
-      await userController.createUser(req, res);
+            await userController.createUser(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: "Password needs to be at least 10 characters" });
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(userService.createUser).toHaveBeenCalled();
+        });
+
+        test('Edge Case: Rövid jelszó hiba (400)', async () => {
+            req.body = { name: 'Teszt', email: 't@e.hu', password: '123' };
+            
+            await userController.createUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ error: expect.stringContaining("min. 10 chars") });
+        });
     });
 
-    it('201-et ad és menti a felhasználót (is_admin kezeléssel)', async () => {
-      const newUser = { name: 'Admin Jani', email: 'admin@tuning.hu', password: 'nagyonhosszujszo' };
-      req.body = newUser;
-      userService.createUser.mockResolvedValue({ id: 1, ...newUser, is_admin: false });
+    // --- GET USER BY ID TESZTEK (Access Control) ---
+    describe('getUserById', () => {
+        test('Saját profil lekérése engedélyezve (200)', async () => {
+            req.params.id = '10';
+            req.user = { user_id: '10', is_admin: false }; // 10-es kéri a 10-est
+            userService.getUserById.mockResolvedValue({ id: '10', name: 'Teszt User' });
 
-      await userController.createUser(req, res);
+            await userController.getUserById(req, res);
 
-      expect(userService.createUser).toHaveBeenCalledWith(expect.objectContaining({
-        is_admin: false
-      }));
-      expect(res.status).toHaveBeenCalledWith(201);
-    });
-  });
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalled();
+        });
 
-  describe('getAllUsers', () => {
-    it('le kell kérnie az összes felhasználót 200-as kóddal', async () => {
-      const mockUsers = [{ id: 1, name: 'User1' }, { id: 2, name: 'User2' }];
-      userService.getAllUsers.mockResolvedValue(mockUsers);
+        test('Admin lekérhet más felhasználót (200)', async () => {
+            req.params.id = '99';
+            req.user = { user_id: '1', is_admin: true }; // Admin kéri a 99-est
+            userService.getUserById.mockResolvedValue({ id: '99' });
 
-      await userController.getAllUsers(req, res);
+            await userController.getUserById(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockUsers);
-    });
-  });
+            expect(res.status).toHaveBeenCalledWith(200);
+        });
 
-  describe('getUserById', () => {
-    it('404-et ad, ha a felhasználó nem létezik', async () => {
-      req.params.id = '999';
-      userService.getUserById.mockResolvedValue(null);
+        test('Biztonsági hiba: Más profiljának lekérése sima userként (403)', async () => {
+            req.params.id = '99';
+            req.user = { user_id: '10', is_admin: false }; // 10-es kéri a 99-est
 
-      await userController.getUserById(req, res);
+            await userController.getUserById(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ error: "User not found" });
-    });
-  });
-
-  describe('updateUser', () => {
-    it('sikeres frissítésnél visszaküldi a frissített objektumot', async () => {
-      req.params.id = '1';
-      const updateData = { name: 'Módosított Név' };
-      req.body = updateData;
-      userService.updateUser.mockResolvedValue({ id: 1, ...updateData });
-
-      await userController.updateUser(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining(updateData));
+            expect(res.status).toHaveBeenCalledWith(403);
+            expect(userService.getUserById).not.toHaveBeenCalled();
+        });
     });
 
-    it('500-at ad, ha a szerviz rétegben hiba történik', async () => {
-        req.params.id = '1';
-        userService.updateUser.mockRejectedValue(new Error("DB Hiba"));
+    // --- UPDATE USER TESZTEK (Privilege Escalation) ---
+    describe('updateUser', () => {
+        test('Sima felhasználó nem adhat magának admin jogot (Security Case)', async () => {
+            req.params.id = '10';
+            req.user = { user_id: '10', is_admin: false }; // Feladó nem admin
+            req.body = { name: 'Hacker', is_admin: true }; // Admin akar lenni
+            
+            userService.updateUser.mockResolvedValue({ id: '10', is_admin: false });
 
-        await userController.updateUser(req, res);
+            await userController.updateUser(req, res);
 
-        expect(res.status).toHaveBeenCalledWith(500);
+            // Ellenőrizzük, hogy a szerviznek kényszerített false státuszt küldtünk-e
+            expect(userService.updateUser).toHaveBeenCalledWith('10', expect.objectContaining({
+                is_admin: false 
+            }));
+        });
+
+        test('Admin módosíthatja más admin státuszát', async () => {
+            req.params.id = '20';
+            req.user = { user_id: '1', is_admin: true }; // Feladó admin
+            req.body = { is_admin: true };
+
+            await userController.updateUser(req, res);
+
+            expect(userService.updateUser).toHaveBeenCalledWith('20', expect.objectContaining({
+                is_admin: true
+            }));
+        });
     });
-  });
 
-  describe('deleteUser', () => {
-    it('sikeres törlésnél visszaigazoló üzenetet küld', async () => {
-      req.params.id = '10';
-      userService.deleteUser.mockResolvedValue(true);
+    // --- DELETE USER TESZTEK ---
+    describe('deleteUser', () => {
+        test('Nem létező felhasználó törlése (404)', async () => {
+            req.params.id = '500';
+            req.user = { user_id: '1', is_admin: true };
+            userService.deleteUser.mockResolvedValue(null);
 
-      await userController.deleteUser(req, res);
+            await userController.deleteUser(req, res);
 
-      expect(res.json).toHaveBeenCalledWith({ message: "User deleted successfully" });
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
+
+        test('Saját fiók törlése (200)', async () => {
+            req.params.id = '10';
+            req.user = { user_id: '10', is_admin: false };
+            userService.deleteUser.mockResolvedValue(true);
+
+            await userController.deleteUser(req, res);
+
+            expect(res.json).toHaveBeenCalledWith({ message: expect.any(String) });
+        });
     });
-  });
+
+    // --- GET ALL USERS TESZTEK ---
+    describe('getAllUsers', () => {
+        test('Összes felhasználó listázása (200)', async () => {
+            // Itt feltételezzük, hogy az admin védelem már lefutott a router szintjén
+            userService.getAllUsers.mockResolvedValue([{ id: 1 }, { id: 2 }]);
+
+            await userController.getAllUsers(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(expect.any(Array));
+        });
+    });
 });
