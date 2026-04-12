@@ -13,7 +13,7 @@ class Part {
   /**
    * @param {Object} params - Az alkatrész tulajdonságai.
    */
-  constructor({part_id, name, manufacturer, part_number, price, stock_quantity, description}) {
+  constructor({part_id, name, manufacturer, part_number, price, stock_quantity, description, category}) {
     this.part_id = part_id;
     this.name = name;
     this.manufacturer = manufacturer;
@@ -21,6 +21,7 @@ class Part {
     this.price = price;
     this.stock_quantity = stock_quantity;
     this.description = description;
+    this.category = category;
   }
 }
 
@@ -31,7 +32,7 @@ class Part {
  * @param {number} [maxPrice] - Maximális eladási ár szerinti korlátozás.
  * @returns {Promise<Part[]>} A keresési feltételeknek megfelelő Part objektumok tömbje.
  */
-exports.findAll = async (searchQuery, maxPrice) => {
+exports.findAll = async (searchQuery, maxPrice, category) => {
   const pool = await getPool();
   const request = pool.request();
   
@@ -51,6 +52,12 @@ exports.findAll = async (searchQuery, maxPrice) => {
     request.input("maxPrice", maxPrice);
     sql += " AND price <= @maxPrice";
   }
+
+  // SZŰRÉS: Kategória szerinti szűrés
+  if (category && category !== 'all') { 
+      request.input("category", category);
+      sql += " AND category = @category";
+    }
 
   const result = await request.query(sql);
   return result.recordset.map(x => new Part(x));
@@ -72,8 +79,9 @@ exports.create = async (part) => {
     .input("price", part.price)
     .input("stock_quantity", part.stock_quantity)
     .input("description", part.description)
-    .query(`INSERT INTO part ([name], manufacturer, part_number, price, stock_quantity, [description]) 
-            OUTPUT INSERTED.* VALUES (@name, @manufacturer, @part_number, @price, @stock_quantity, @description)`);
+    .input("category", part.category)
+    .query(`INSERT INTO part ([name], manufacturer, part_number, price, stock_quantity, [description], category) 
+            OUTPUT INSERTED.* VALUES (@name, @manufacturer, @part_number, @price, @stock_quantity, @description, @category)`);
   return new Part(result.recordset[0]);
 }
 
@@ -104,8 +112,9 @@ exports.update = async (id, part) => {
     .input("price", part.price)
     .input("stock_quantity", part.stock_quantity)
     .input("description", part.description)
+    .input("category", part.category)
     .query(`UPDATE part SET [name]=@name, manufacturer=@manufacturer, part_number=@part_number, 
-            price=@price, stock_quantity=@stock_quantity, [description]=@description 
+            price=@price, stock_quantity=@stock_quantity, [description]=@description, category=@category
             OUTPUT INSERTED.* WHERE part_id=@id`);
   return result.recordset[0] ? new Part(result.recordset[0]) : null;
 }

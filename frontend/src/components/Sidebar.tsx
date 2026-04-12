@@ -7,14 +7,13 @@ export default function Sidebar() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // URL-ből az aktuális szűrők
   const category = searchParams.get('category') || 'all';
-  const selectedCar = searchParams.get('car') || '';
-  const priceFromUrl = searchParams.get('price') || '1500000';
+  const priceFromUrl = searchParams.get('price') || '500000';
 
-  // Helyi állapot a csúszkának, hogy ne laggoljon
   const [localPrice, setLocalPrice] = useState(priceFromUrl);
 
-  // Ha az URL-ben változik az ár, kövesse a helyi állapot is
+  // csúszka update
   useEffect(() => {
     setLocalPrice(priceFromUrl);
   }, [priceFromUrl]);
@@ -33,36 +32,32 @@ export default function Sidebar() {
 
   return (
     <aside className={styles.sidebar}>
+      {/* Kategória szűrő*/}
       <div className={styles.filterGroup}>
-        <h4 className={styles.filterTitle}>My Vehicle</h4>
+        <h4 className={styles.filterTitle}>Alkatrész típus</h4>
         <select 
           className={styles.selectInput}
-          value={selectedCar}
-          onChange={(e) => updateUrl({ car: e.target.value })}
+          value={category}
+          onChange={(e) => updateUrl({ category: e.target.value })}
         >
-          <option value="">Select your Ford</option>
-          <optgroup label="Focus">
-            <option value="Focus-RS">Focus RS</option>
-            <option value="Focus-ST">Focus ST</option>
-          </optgroup>
-          <optgroup label="Mustang">
-            <option value="Mustang-GT">Mustang GT</option>
-            <option value="Mustang-EcoBoost">Mustang EcoBoost</option>
-          </optgroup>
-          <optgroup label="Fiesta">
-            <option value="Fiesta-ST">Fiesta ST</option>
-          </optgroup>
+          <option value="all">Összes kategória</option>
+          <option value="Engine">Motor (Engine)</option>
+          <option value="Suspension">Futómű (Suspension)</option>
+          <option value="Brakes">Fékrendszer (Brakes)</option>
+          <option value="Exhaust">Kipufogó (Exhaust)</option>
+          <option value="Body">Karosszéria (Body)</option>
         </select>
       </div>
 
+      {/* Ár szűrő */}
       <div className={styles.filterGroup}>
-        <h4 className={styles.filterTitle}>Max Price</h4>
+        <h4 className={styles.filterTitle}>Maximális ár</h4>
         <input 
           type="range" min="1000" max="500000" step="1000"
           value={localPrice}
           className={styles.priceRange}
           onChange={(e) => setLocalPrice(e.target.value)}
-          onMouseUp={() => updateUrl({ price: localPrice })} // Csak elengedéskor frissít URL-t
+          onMouseUp={() => updateUrl({ price: localPrice })} 
         />
         <div className={styles.priceLabel}>
           <span className="text-danger fw-bold">
@@ -71,8 +66,9 @@ export default function Sidebar() {
         </div>
       </div>
 
+        {/* reset gomb */}
       <button className={styles.resetBtn} onClick={() => router.push('?')}>
-        Reset Filters
+        Szűrők törlése
       </button>
     </aside>
   );

@@ -48,6 +48,7 @@ CREATE TABLE part (
     stock_quantity INT NOT NULL DEFAULT 0,
     [description] VARCHAR(255),
     discount_factor DECIMAL(5, 4) NOT NULL DEFAULT 1.0000,
+     category VARCHAR(50) NOT NULL,
 
     CONSTRAINT CK_Valid_Discount
     CHECK (0.0000 <= discount_factor AND discount_factor <= 1.0000)
@@ -104,7 +105,7 @@ GO
 
 INSERT INTO [user] (name, email, password_hash, is_admin) VALUES
 ('Admin', 'admin@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 1), -- password: 0123456789
-('Teszt Elek', 'teszt@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 0), -- password: 0123456789
+('Teszt Elek', 'teszt@torquelab.hu', '$2a$10$Bk.ljIgH0ExxrxVtSb5TIO8qpEXld7kdTSaClw/Co09.uhujDaJPC', 0); -- password: 0123456789
 
 
 INSERT INTO car
@@ -115,12 +116,11 @@ VALUES
 ('WF0FXXGCDGJ987654', 'Ford', 'Fiesta', 2016, '1.0 EcoBoost', 120000, 1);
 
 INSERT INTO part
-(name, manufacturer, part_number, price, stock_quantity, description)
+(name, manufacturer, part_number, price, stock_quantity, description, category)
 VALUES
-('Oil Filter', 'Bosch', 'OF-1234', 4500.00, 30, 'Standard oil filter'),
-('Brake Pad Set (Front)', 'Brembo', 'BP-FORD-01', 32000.00, 12, 'Front brake pads'),
-('Performance Air Filter', 'K&N', 'KN-33-2865', 18000.00, 5, 'High-flow air filter');
-
+('Oil Filter', 'Bosch', 'OF-1234', 4500.00, 30, 'Standard oil filter', 'Engine'),
+('Brake Pad Set (Front)', 'Brembo', 'BP-FORD-01', 32000.00, 12, 'Front brake pads', 'Brakes'),
+('Performance Air Filter', 'K&N', 'KN-33-2865', 18000.00, 5, 'High-flow air filter', 'Engine');
 INSERT INTO service_log
 (car_id, performed_by, service_date, description)
 VALUES
