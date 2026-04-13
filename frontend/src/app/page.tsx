@@ -5,30 +5,43 @@ export default function Home() {
   return (
     <main className={styles.mainWrapper}>
 
-      {/* HERO SECTION */}
-      <section className={`${styles.heroSection} shadow-lg`}>
-        <div className="container text-center">
-          <img
-            src="/logo_vegleg.png"
-            alt="TorqueLab"
-            className={styles.heroLogo}
-          />
-           <h2 className={styles.sectionTitle}>Nem csak javítunk! <span className="text-danger"> Építünk. Fejlesztünk. Tökéletesítünk.</span></h2>
-          <p className={`${styles.heroText} lead text-secondary`}>
-            Ahol a nyomaték nem csak egy szám, hanem maga az élmény.
-          </p>
-
-          <div className="d-flex justify-content-center gap-3">
-            <Link
-              href="/aboutus"
-              className={`btn btn-lg px-5 ${styles.btnDangerCustom} text-white`}
-            >
-              Ismerd meg csapatunkat!
-            </Link>
+      {/* Főoldal kezd */}
+    <section className={`${styles.heroSection} shadow-lg py-5`}>
+      <div className="container">
+        <div className="row g-0 w-100 align-items-center">
+          
+          {/* Kep */}
+          <div className="col-12 col-md-6 text-center">
+            <img
+              src="/logo_vegleg.png"
+              alt="TorqueLab"
+              className={`${styles.heroLogo} img-fluid`} 
+            />
           </div>
-        </div>
-      </section>
 
+          {/* Jobb oldal */}
+          <div className="col-12 col-md-6 p-4 text-center text-md-start">
+            <h2 className={styles.sectionTitle}>
+              Nem csak javítunk! <span className="text-danger"> Építünk. Fejlesztünk. Tökéletesítünk.</span>
+            </h2>
+            
+            <p className="lead mt-3">
+              Ahol a nyomaték nem csak egy szám, hanem maga az élmény.
+            </p>
+
+            <div className="mt-4">
+              <Link
+                href="/aboutus"
+                className={`btn btn-lg px-5 ${styles.btnDangerCustom} text-white`}
+              >
+                Ismerd meg csapatunkat!
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
       {/* RÓLUNK SZAKASZ */}
       <section className="py-5 bg-black">
         <div className="container py-5">
@@ -83,14 +96,14 @@ export default function Home() {
               },
               {
                 icon: '🔧',
-                title: 'Szerviz és Építés',
-                text: 'Teljes körű karbantartás és egyedi projektmunkák.',
+                title: 'Szerviz és Tunning',
+                text: 'Hozd ki a legjobbat autódból a TorqueLab csapatának segítségével!',
                 link: '/service',
               },
               {
                 icon: '🏎️',
-                title: 'Projekt Autók',
-                text: 'Egyedileg épített járművek, készen az új tulajdonosra.',
+                title: 'TorqueLab projektek',
+                text: 'Lépj be a garázsunkba, és nézd meg, hogyan kelnek életre az álmok!',
                 link: '/catalog',
               },
             ].map((item, idx) => (
