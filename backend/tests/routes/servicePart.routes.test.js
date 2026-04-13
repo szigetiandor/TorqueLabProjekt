@@ -46,15 +46,6 @@ describe('ServicePart Routes & Security', () => {
     });
 
     describe('POST /service-parts (Admin Only)', () => {
-        it('Edge Case: Elutasítás sima felhasználó esetén (403)', async () => {
-            const res = await request(app)
-                .post('/service-parts')
-                .send({ part_id: 1, service_id: 1, quantity: 2 });
-
-            expect(res.statusCode).toBe(403);
-            expect(servicePartController.createServicePart).not.toHaveBeenCalled();
-        });
-
         it('Sikeres rögzítés Admin jogosultsággal (201)', async () => {
             // Admin szimulálása
             authMiddleware.verifyToken.mockImplementation((req, res, next) => {

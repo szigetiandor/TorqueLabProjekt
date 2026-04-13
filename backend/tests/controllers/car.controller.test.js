@@ -59,7 +59,7 @@ describe('CarController Unit Tests', () => {
 
             await carController.getAllCars(req, res);
 
-            expect(carService.getAllCars).toHaveBeenCalledWith('Camry', undefined);
+            expect(carService.getAllCars).toHaveBeenCalledWith('Camry', undefined, undefined);
             expect(res.json).toHaveBeenCalledWith(expect.any(Array));
         });
     });

@@ -29,7 +29,7 @@ describe('Car Service', () => {
 
             const result = await carService.getAllCars('Civic', 'Sedan');
 
-            expect(carModel.findAll).toHaveBeenCalledWith('Civic', 'Sedan');
+            expect(carModel.findAll).toHaveBeenCalledWith('Civic', 'Sedan', undefined);
             expect(result).toEqual(mockCars);
         });
     });

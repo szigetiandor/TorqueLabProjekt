@@ -52,7 +52,7 @@ describe("ServicePartController Unit Tests", () => {
       await servicePartController.createServicePart(req, res);
 
       expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: "Database failure" });
+      expect(res.json).toHaveBeenCalledWith({ error: "Belső szerverhiba a készletkezelés során." });
     });
   });
 

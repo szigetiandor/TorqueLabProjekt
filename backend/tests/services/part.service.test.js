@@ -30,13 +30,13 @@ describe('Part Service', () => {
             const result = await partService.getAllParts('bosch', 5000);
 
             
-            expect(partModel.findAll).toHaveBeenCalledWith('bosch', 5000);
+            expect(partModel.findAll).toHaveBeenCalledWith('bosch', 5000, undefined);
             expect(result).toEqual(mockParts);
         });
 
         it('helyesen kezeli, ha nincsenek szűrők', async () => {
             await partService.getAllParts();
-            expect(partModel.findAll).toHaveBeenCalledWith(undefined, undefined);
+            expect(partModel.findAll).toHaveBeenCalledWith(undefined, undefined, undefined);
         });
     });
 
@@ -84,7 +84,7 @@ describe('Part Service', () => {
             const result = await partService.getAllParts('olaj', -100);
 
             
-            expect(partModel.findAll).toHaveBeenCalledWith('olaj', -100);
+            expect(partModel.findAll).toHaveBeenCalledWith('olaj', -100, undefined);
         });
 
         it('kezelnie kell a speciális karaktereket a keresőben', async () => {
@@ -93,7 +93,7 @@ describe('Part Service', () => {
 
             await partService.getAllParts(specialChars, null);
 
-            expect(partModel.findAll).toHaveBeenCalledWith(specialChars, null);
+            expect(partModel.findAll).toHaveBeenCalledWith(specialChars, null, undefined);
         });
     });
 });

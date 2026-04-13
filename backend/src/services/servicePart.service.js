@@ -25,6 +25,10 @@ exports.createServicePart = async (data) => {
         throw new Error("A választott alkatrész nem található!");
     }
 
+    if (quantity <= 0) {
+        throw new Error("A mennyiségnek nagyobbnak kell lennie 0-nál!");
+    }
+
     // 2. Készlet ellenőrzése
     if (part.stock_quantity < quantity) {
         throw new Error(`Nincs elég készleten: ${part.part_name || 'Alkatrész'}. Elérhető: ${part.stock_quantity} db.`);

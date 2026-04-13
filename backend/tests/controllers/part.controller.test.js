@@ -28,7 +28,7 @@ describe('Part Controller', () => {
 
       await partController.getAllParts(req, res);
 
-      expect(partService.getAllParts).toHaveBeenCalledWith('fék', '5000');
+      expect(partService.getAllParts).toHaveBeenCalledWith('fék', '5000', undefined);
       expect(res.json).toHaveBeenCalledWith(mockParts);
     });
   });
