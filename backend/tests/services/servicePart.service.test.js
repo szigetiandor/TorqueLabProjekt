@@ -1,9 +1,9 @@
 const servicePartService = require('../../src/services/servicePart.service');
 const servicePartModel = require('../../src/models/servicePart.model');
-const partModel = require('../../src/models/part.model'); // Beimportáljuk a part modelt is
+const partModel = require('../../src/models/part.model');
 
 jest.mock('../../src/models/servicePart.model');
-jest.mock('../../src/models/part.model'); // Mockoljuk a part modelt
+jest.mock('../../src/models/part.model'); 
 
 describe('ServicePart Service - Készletkezelés és Logikai tesztek', () => {
 
@@ -20,20 +20,20 @@ describe('ServicePart Service - Készletkezelés és Logikai tesztek', () => {
         };
 
         it('hibát kell dobnia, ha nincs elég készlet', async () => {
-            // Beállítjuk, hogy az alkatrész létezik, de csak 5 van belőle
+            
             partModel.findById.mockResolvedValue(mockPart);
             
             const data = { 
                 service_id: 1, 
                 part_id: 10, 
-                quantity: 10, // Többet akarunk, mint amennyi van
+                quantity: 10, 
                 unit_price: 150000 
             };
 
             await expect(servicePartService.createServicePart(data))
                 .rejects.toThrow(/Nincs elég készleten/);
             
-            // Ellenőrizzük, hogy NEM rögzült a szerviz-alkatrész és NEM frissült a stock
+            
             expect(servicePartModel.create).not.toHaveBeenCalled();
             expect(partModel.update).not.toHaveBeenCalled();
         });
@@ -51,13 +51,13 @@ describe('ServicePart Service - Készletkezelés és Logikai tesztek', () => {
 
             const result = await servicePartService.createServicePart(data);
 
-            // 1. Ellenőrizzük, hogy a készlet levonásra került (5 - 2 = 3)
-            // A korábbi javításunk értelmében a teljes objektumot küldjük frissítésre
+            
+            
             expect(partModel.update).toHaveBeenCalledWith(10, expect.objectContaining({
                 stock_quantity: 3
             }));
 
-            // 2. Ellenőrizzük, hogy a szerviznaplóhoz hozzá lett adva
+            
             expect(servicePartModel.create).toHaveBeenCalledWith(data);
             expect(result).toBeDefined();
         });
@@ -73,7 +73,6 @@ describe('ServicePart Service - Készletkezelés és Logikai tesztek', () => {
     });
 
     describe('Logikai Edge Case-ek', () => {
-        // Közös mock adat a logikai tesztekhez, hogy ne a "nem található" hiba fusson le
         const existingPart = {
             part_id: 1,
             name: 'Test Part',
@@ -82,7 +81,7 @@ describe('ServicePart Service - Készletkezelés és Logikai tesztek', () => {
         };
 
         it('hibát kell dobnia, ha a mennyiség negatív', async () => {
-            // Beállítjuk, hogy az alkatrész létezik
+            
             partModel.findById.mockResolvedValue(existingPart);
 
             const badData = { 
@@ -94,7 +93,7 @@ describe('ServicePart Service - Készletkezelés és Logikai tesztek', () => {
             await expect(servicePartService.createServicePart(badData))
                 .rejects.toThrow("A mennyiségnek nagyobbnak kell lennie 0-nál!");
             
-            // Fontos: ellenőrizzük, hogy negatív adatnál nem hívódott meg a mentés
+            
             expect(servicePartModel.create).not.toHaveBeenCalled();
         });
     });

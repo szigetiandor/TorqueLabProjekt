@@ -2,13 +2,13 @@ const express = require("express")
 const cookieParser = require("cookie-parser")
 const path = require("path")
 
-const cors = require("cors") // bocsi ,de elv kell a cors hogy be tudjak logolni
+const cors = require("cors") 
 
 const app = express()
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL, //localhost 3000
-  credentials: true,               // süti kérés/fogadás true
+  origin: process.env.FRONTEND_URL, 
+  credentials: true,               
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

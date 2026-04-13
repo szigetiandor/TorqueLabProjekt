@@ -18,7 +18,7 @@ const partModel = require("../models/part.model");
 exports.createServicePart = async (data) => {
     const { part_id, quantity } = data;
 
-    // 1. Alkatrész lekérése a jelenlegi készlet ellenőrzéséhez
+    
     const part = await partModel.findById(part_id);
     
     if (!part) {
@@ -29,20 +29,20 @@ exports.createServicePart = async (data) => {
         throw new Error("A mennyiségnek nagyobbnak kell lennie 0-nál!");
     }
 
-    // 2. Készlet ellenőrzése
+    
     if (part.stock_quantity < quantity) {
         throw new Error(`Nincs elég készleten: ${part.part_name || 'Alkatrész'}. Elérhető: ${part.stock_quantity} db.`);
     }
 
-    // 3. Készlet módosítása (levonás)
-    // Megjegyzés: A modellben meg kell írnod az updateStock-ot vagy használd a sima update-et
+    
+    
     const newStock = part.stock_quantity - quantity;
     await partModel.update(part_id, { 
         ...part, // Megtartjuk az eredeti nevet, árat, stb.
         stock_quantity: newStock 
     });
 
-    // 4. A szerviz-alkatrész kapcsolat rögzítése
+    
     return await servicePartModel.create(data);
 };
 
@@ -77,7 +77,7 @@ exports.getServicePartById = async (id) => {
  * @returns {Promise<Object>}
  */
 exports.updateServicePart = async (id, data) => {
-    // Üzleti logika: Ha módosítunk, itt is ellenőrizzük a mennyiséget
+    
     if (data.quantity !== undefined && data.quantity <= 0) {
         throw new Error("A módosított mennyiségnek pozitívnak kell lennie!");
     }

@@ -14,7 +14,7 @@ const userService = require('../services/user.service')
  * @returns {boolean} True, ha a kérést indító személy Admin VAGY a kért ID a sajátja.
  */
 const hasAccess = (req, targetId) => {
-    // Az authMiddleware.verifyToken-nek el kell mentenie a user adatokat a req.user-be
+    
     return req.user.is_admin || String(req.user.user_id) === String(targetId);
 };
 
@@ -73,7 +73,7 @@ exports.getAllUsers = async (req, res) => {
  */
 exports.getUserById = async (req, res) => {
     try {
-        // VÉDELEM: Csak admin vagy a saját profil érhető el
+        
         if (!hasAccess(req, req.params.id)) {
             return res.status(403).json({ error: "Access denied. You can only view your own profile." })
         }
@@ -100,7 +100,7 @@ exports.getUserById = async (req, res) => {
  */
 exports.updateUser = async (req, res) => {
     try {
-        // VÉDELEM: Csak admin vagy a saját profil módosítható
+        
         if (!hasAccess(req, req.params.id)) {
             return res.status(403).json({ error: "Access denied. You can only update your own profile." })
         }
@@ -110,7 +110,7 @@ exports.updateUser = async (req, res) => {
         // EXTRA VÉDELEM: Sima felhasználó ne tudja magát Adminná léptetni
         let finalAdminStatus = is_admin;
         if (!req.user.is_admin) {
-            finalAdminStatus = req.user.is_admin; // Kényszerítjük a jelenlegi (false) státuszt
+            finalAdminStatus = req.user.is_admin; 
         }
 
         const updated = await userService.updateUser(req.params.id, { 
@@ -139,7 +139,7 @@ exports.updateUser = async (req, res) => {
  */
 exports.deleteUser = async (req, res) => {
     try {
-        // VÉDELEM: Csak admin vagy a saját profil törölhető
+        
         if (!hasAccess(req, req.params.id)) {
             return res.status(403).json({ error: "Access denied. You can only delete your own account." })
         }

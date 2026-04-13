@@ -1,7 +1,6 @@
 const serviceLogController = require('../../src/controllers/serviceLog.controller');
 const serviceLogService = require('../../src/services/serviceLog.service');
 
-// A szerviz réteg mockolása
 jest.mock('../../src/services/serviceLog.service');
 
 describe('ServiceLogController Unit Tests', () => {

@@ -4,7 +4,6 @@ const partRoutes = require('../../src/routes/part.routes');
 const partController = require('../../src/controllers/part.controller');
 const authMiddleware = require('../../src/middleware/auth.middleware');
 
-// Kontroller és Middleware mockolása
 jest.mock('../../src/controllers/part.controller');
 jest.mock('../../src/middleware/auth.middleware');
 
@@ -17,13 +16,13 @@ describe('Part Routes Unit Tests', () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        // Alapértelmezett viselkedés: a token érvényes, de a felhasználó NEM admin
+        
         authMiddleware.verifyToken.mockImplementation((req, res, next) => {
             req.user = { user_id: 100, is_admin: false };
             next();
         });
 
-        // Admin ellenőrzés elutasítása sima felhasználó esetén
+        
         authMiddleware.verifyAdmin.mockImplementation((req, res, next) => {
             if (req.user && req.user.is_admin) {
                 next();
@@ -33,7 +32,7 @@ describe('Part Routes Unit Tests', () => {
         });
     });
 
-    // --- PUBLIKUS ÚTVONALAK (GET) ---
+    
 
     describe('GET /parts', () => {
         test('Összes alkatrész listázása - Token nélkül is elérhető (Public)', async () => {
@@ -43,7 +42,7 @@ describe('Part Routes Unit Tests', () => {
 
             expect(res.statusCode).toBe(200);
             expect(partController.getAllParts).toHaveBeenCalled();
-            // Ellenőrizzük, hogy a middleware-ek NEM hívódtak meg
+            
             expect(authMiddleware.verifyToken).not.toHaveBeenCalled();
         });
 
@@ -57,7 +56,7 @@ describe('Part Routes Unit Tests', () => {
         });
     });
 
-    // --- VÉDETT ÚTVONALAK (POST, PUT, DELETE) ---
+    
 
     describe('POST /parts (Admin Only)', () => {
         test('Edge Case: Sima felhasználó (nem admin) elutasítása (403)', async () => {
@@ -70,7 +69,7 @@ describe('Part Routes Unit Tests', () => {
         });
 
         test('Sikeres létrehozás Admin fiókkal (201)', async () => {
-            // Admin státusz beállítása a mockban
+            
             authMiddleware.verifyToken.mockImplementation((req, res, next) => {
                 req.user = { user_id: 1, is_admin: true };
                 next();
@@ -112,7 +111,7 @@ describe('Part Routes Unit Tests', () => {
 
     describe('DELETE /parts/:id (Admin Only)', () => {
         test('Törlés elutasítása érvénytelen vagy hiányzó token esetén (401)', async () => {
-            // Szimuláljuk a verifyToken hibáját
+            
             authMiddleware.verifyToken.mockImplementation((req, res, next) => {
                 return res.status(401).json({ error: "Érvénytelen token" });
             });

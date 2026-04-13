@@ -4,7 +4,6 @@ const carRoutes = require('../../src/routes/car.routes');
 const carController = require('../../src/controllers/car.controller');
 const authMiddleware = require('../../src/middleware/auth.middleware');
 
-// Kontroller és Middleware mockolása
 jest.mock('../../src/controllers/car.controller');
 jest.mock('../../src/middleware/auth.middleware');
 
@@ -17,7 +16,7 @@ describe('Car Routes Unit Tests with Auth Mocking', () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        // Alapértelmezett mock: a token érvényes
+        
         authMiddleware.verifyToken.mockImplementation((req, res, next) => {
             req.user = { user_id: 10, is_admin: false };
             next();
@@ -32,7 +31,7 @@ describe('Car Routes Unit Tests with Auth Mocking', () => {
 
             expect(res.statusCode).toBe(200);
             expect(carController.getAllCars).toHaveBeenCalled();
-            // Ellenőrizzük, hogy NEM hívódott meg a token ellenőrzés
+            
             expect(authMiddleware.verifyToken).not.toHaveBeenCalled();
         });
 
@@ -67,7 +66,7 @@ describe('Car Routes Unit Tests with Auth Mocking', () => {
             const res = await request(app).post('/cars').send({});
 
             expect(res.statusCode).toBe(401);
-            // A kontrollerig el sem jut a kérés
+            
             expect(carController.createCar).not.toHaveBeenCalled();
         });
     });

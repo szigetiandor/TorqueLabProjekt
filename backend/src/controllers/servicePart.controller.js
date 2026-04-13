@@ -21,7 +21,7 @@ exports.createServicePart = async (req, res) => {
   try {
     const { service_id, part_id, quantity, unit_price } = req.body;
 
-    // Alapvető mező-validáció
+    
     if (!service_id || !part_id || quantity === undefined || !unit_price) {
       return res.status(400).json({
         error: "Minden mező (service_id, part_id, quantity, unit_price) kitöltése kötelező!"
@@ -41,7 +41,7 @@ exports.createServicePart = async (req, res) => {
   catch (err) {
     console.error("Hiba a ServicePart rögzítésekor:", err.message);
 
-    // Ha a hibaüzenet tartalmazza a "készlet" szót, 400-as kódot küldünk
+    
     if (err.message.includes("készlet") || err.message.includes("található")) {
         return res.status(400).json({ error: err.message });
     }

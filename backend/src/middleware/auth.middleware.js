@@ -32,7 +32,7 @@ exports.verifyToken = (req, res, next) => {
   }
 
   try {
-    // Token kicsomagolása és ellenőrzése a titkos kulccsal
+    
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     
     /** * A dekódolt adatokat (pl. user_id, is_admin) hozzácsatoljuk a kéréshez,
@@ -59,7 +59,7 @@ exports.verifyAdmin = (req, res, next) => {
     return res.status(401).json({ error: 'unauthorized, login required' })
   }
 
-  // Ellenőrzi, hogy a tokenben lévő is_admin mező igaz-e (1 vagy true)
+  
   if (!req.user.is_admin) {
     return res.status(401).json({error: 'unauthorized, admin access required'})
   }
