@@ -21,19 +21,34 @@ exports.createServicePart = async (req, res) => {
   try {
     const { service_id, part_id, quantity, unit_price } = req.body;
 
-    if (!service_id || !part_id || !quantity || !unit_price) {
-      return res.status(400).json({error: "Minden mező (service_id, part_id, quantity, unit_price) kitöltése kötelező!"})
+    // Alapvető mező-validáció
+    if (!service_id || !part_id || quantity === undefined || !unit_price) {
+      return res.status(400).json({
+        error: "Minden mező (service_id, part_id, quantity, unit_price) kitöltése kötelező!"
+      });
     }
 
-    const service = await servicePartService.createServicePart({service_id, part_id, quantity, unit_price})
+    // A service hívása, ami most már dobhat "Nincs elég készlet" hibát
+    const servicePart = await servicePartService.createServicePart({
+      service_id, 
+      part_id, 
+      quantity, 
+      unit_price
+    });
 
-    res.status(201).json(service)
+    res.status(201).json(servicePart);
   }
   catch (err) {
-    console.log(err)
-    res.status(500).json({error: err.message})
+    console.error("Hiba a ServicePart rögzítésekor:", err.message);
+
+    // Ha a hibaüzenet tartalmazza a "készlet" szót, 400-as kódot küldünk
+    if (err.message.includes("készlet") || err.message.includes("található")) {
+        return res.status(400).json({ error: err.message });
+    }
+
+    res.status(500).json({ error: "Belső szerverhiba a készletkezelés során." });
   }
-}
+};
 
 /**
  * Az összes szerviz-alkatrész kapcsolat lekérése.

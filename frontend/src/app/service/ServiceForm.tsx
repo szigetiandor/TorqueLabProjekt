@@ -77,6 +77,8 @@ export default function ServiceForm() {
     setLoading(true);
     setError(null);
 
+    let createdServiceId: number | null = null;
+
     try {
       let carId = null;
       const vinUpper = formData.vin.toUpperCase();
@@ -131,24 +133,35 @@ export default function ServiceForm() {
         }),
       });
 
-      const newServiceId = serviceData.service_id;
+      createdServiceId = serviceData.service_id;
 
       // 3. TUNING ALKATRÉSZEK RÖGZÍTÉSE
       if (formData.service_type === 'tuning' && selectedParts.length > 0) {
-        const partPromises = selectedParts.map(partId => {
-          const partInfo = availableParts.find(p => p.part_id === partId);
-          return apiRequest('/service-parts', {
-            method: 'POST',
-            body: JSON.stringify({
-              service_id: newServiceId,
-              part_id: partId,
-              quantity: 1,
-              unit_price: partInfo ? partInfo.price : 0
-            }),
+        try {
+          const partPromises = selectedParts.map(partId => {
+            const partInfo = availableParts.find(p => p.part_id === partId);
+            return apiRequest('/service-parts', {
+              method: 'POST',
+              body: JSON.stringify({
+                service_id: createdServiceId,
+                part_id: partId,
+                quantity: 1,
+                unit_price: partInfo ? partInfo.price : 0
+              }),
+            });
           });
-        });
 
-        await Promise.all(partPromises);
+          // Megvárjuk az összes alkatrész rögzítését
+          await Promise.all(partPromises);
+        } catch (partErr: any) {
+          // KRITIKUS: Ha az alkatrész rögzítése elbukik (pl. stock hiba), 
+          // töröljük a már létrehozott szerviznaplót is!
+          if (createdServiceId) {
+            await apiRequest(`/service-logs/${createdServiceId}`, { method: 'DELETE' });
+          }
+          // Továbbdobjuk a hibát a külső catch-nek
+          throw new Error(`Alkatrész hiba: ${partErr.message}. A foglalás megszakítva.`);
+        }
       }
 
       setSuccess(true);
