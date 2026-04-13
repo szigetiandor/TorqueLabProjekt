@@ -39,7 +39,7 @@ export default function ServiceForm() {
   }, []);
 
   const handlePartToggle = (partId: number) => {
-    setSelectedParts(prev => 
+    setSelectedParts(prev =>
       prev.includes(partId) ? prev.filter(id => id !== partId) : [...prev, partId]
     );
   };
@@ -49,7 +49,7 @@ export default function ServiceForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
     // Ha elváltunk a tuningtól, ürítsük a válogatást
     if (name === 'service_type' && value !== 'tuning') {
-        setSelectedParts([]);
+      setSelectedParts([]);
     }
   };
 
@@ -78,81 +78,84 @@ export default function ServiceForm() {
     setError(null);
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      let carId = null;
+      const vinUpper = formData.vin.toUpperCase();
 
-      // 1. AUTÓ LÉTREHOZÁSA (A séma minden kötelező mezőjével)
-      const carResponse = await fetch(`${API_URL}/cars`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          vin: formData.vin.toUpperCase(),
-          brand: formData.brand,
-          model: formData.model,
-          production_year: Number(formData.production_year),
-          engine: formData.engine,
-          mileage: Number(formData.mileage),
-          for_sale: 0, // Alapértelmezett a séma szerint
-          price: 0
-        }),
-        credentials: 'include',
-      });
+      // 1. ELLENŐRZÉS: Próbáljuk lekérni az autót VIN alapján
+      try {
+        const existingCar = await apiRequest(`/cars/vin/${vinUpper}`);
 
-      const carData = await carResponse.json();
-      if (!carResponse.ok) throw new Error(carData.error || 'Hiba az autó rögzítésekor (lehet, hogy a VIN már létezik).');
+        // Ha ide elér a kód, az autó létezik (mert nem dobott 404-et az apiRequest)
+        if (existingCar && (existingCar.is_owner || existingCar.user_id === existingCar.current_user_id)) {
+          carId = existingCar.car_id;
+          console.log("Meglévő saját autó használata:", carId);
+        } else {
+          // Ha létezik, de nem a felhasználóé
+          throw new Error('Ez a jármű már regisztrálva van egy másik felhasználóhoz!');
+        }
+      } catch (err: any) {
+        // Ha 404-es hibát kaptunk (nem létezik az autó), akkor létrehozzuk
+        if (err.status === 404 || err.message?.includes('404')) {
+          console.log("Az autó nem létezik, új létrehozása...");
+
+          const newCar = await apiRequest('/cars', {
+            method: 'POST',
+            body: JSON.stringify({
+              vin: vinUpper,
+              brand: formData.brand,
+              model: formData.model,
+              production_year: Number(formData.production_year),
+              engine: formData.engine,
+              mileage: Number(formData.mileage),
+              for_sale: 0,
+              price: 0
+            }),
+          });
+
+          carId = newCar.car_id;
+        } else {
+          // Ha egyéb hiba történt (pl. 500-as szerverhiba), azt továbbdobjuk a külső catch-nek
+          console.error("Váratlan hiba az autó ellenőrzésekor:", err);
+          throw err;
+        }
+      }
 
       // 2. SZERVIZNAPLÓ LÉTREHOZÁSA
-      const serviceResponse = await fetch(`${API_URL}/service-logs`, {
+      // Mivel az apiRequest már az adatot adja, a serviceData maga a válasz objektum
+      const serviceData = await apiRequest('/service-logs', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          car_id: carData.car_id,
+          car_id: carId,
           service_date: new Date().toISOString().split('T')[0],
           description: `[${formData.service_type.toUpperCase()}] ${formData.description}`
         }),
-        credentials: 'include',
       });
-
-      const serviceData = await serviceResponse.json();
-
-      if (!serviceResponse.ok) {
-        console.log(serviceData)
-        throw new Error(`Az autó rögzítve, de a szerviznapló hibába ütközött.`);
-      }
 
       const newServiceId = serviceData.service_id;
 
+      // 3. TUNING ALKATRÉSZEK RÖGZÍTÉSE
       if (formData.service_type === 'tuning' && selectedParts.length > 0) {
-        // Létrehozzuk a kérések listáját
         const partPromises = selectedParts.map(partId => {
-          // Megkeressük az alkatrész adatait (ár), hogy elküldhessük a kontrollernek
           const partInfo = availableParts.find(p => p.part_id === partId);
-          
-          return fetch(`${API_URL}/service-parts`, {
+          return apiRequest('/service-parts', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               service_id: newServiceId,
               part_id: partId,
-              quantity: 1, // Tuningnál alapértelmezett 1 db
+              quantity: 1,
               unit_price: partInfo ? partInfo.price : 0
             }),
-            credentials: 'include',
           });
         });
 
-        // Megvárjuk, amíg az összes alkatrész kérése lefut
-        const partResults = await Promise.all(partPromises);
-        
-        // Ellenőrizzük, volt-e hiba köztük
-        const failed = partResults.filter(r => !r.ok);
-        if (failed.length > 0) {
-          console.warn(`${failed.length} alkatrészt nem sikerült rögzíteni.`);
-        }
+        await Promise.all(partPromises);
       }
 
       setSuccess(true);
     } catch (err: any) {
-      setError(err.message);
+      // Itt jelenik meg minden hiba (saját dobott hiba vagy apiRequest hiba)
+      console.error("Hiba a folyamat során:", err);
+      setError(err.message || "Valami hiba történt az igénylés során.");
     } finally {
       setLoading(false);
     }
@@ -171,7 +174,7 @@ export default function ServiceForm() {
   return (
     <form className={styles.serviceForm} onSubmit={handleSubmit}>
       {error && <div className="alert alert-danger border-0 mb-4 shadow-sm text-center">⚠️ {error}</div>}
-      
+
       <div className="row g-3">
         {/* Jármű adatok */}
         <div className="col-md-6">
@@ -185,15 +188,15 @@ export default function ServiceForm() {
 
         <div className="col-md-12">
           <label className={styles.label}>VIN / Alvázszám (Motorkód - 17 karakter)</label>
-          <input 
-            name="vin" 
-            type="text" 
+          <input
+            name="vin"
+            type="text"
             className={`form-control ${formData.vin.length > 0 && formData.vin.length !== 17 ? 'is-invalid' : ''}`}
-            placeholder="Azonosító kód" 
+            placeholder="Azonosító kód"
             maxLength={17}
-            value={formData.vin} 
-            onChange={handleChange} 
-            required 
+            value={formData.vin}
+            onChange={handleChange}
+            required
           />
           <div className="form-text text-secondary">Karakterek száma: {formData.vin.length}/17</div>
         </div>
@@ -221,73 +224,72 @@ export default function ServiceForm() {
             <option value="diag">Diagnosztika</option>
           </select>
 
-{/* PARTS */}
+          {/* PARTS */}
           {formData.service_type === 'tuning' && (
-  <div className="mb-4 p-3 bg-black bg-opacity-25 rounded border border-secondary shadow-sm">
-    <label className={`${styles.label} text-danger d-block mb-3`}>
-      Választható Tuning Alkatrészek
-    </label>
-    <div className="row g-3"> {/* Kicsit nagyobb gap (g-3) a kártyáknak jobban áll */}
-      {availableParts.length > 0 ? (
-        availableParts.map((part) => {
-          // Összefésüljük az API adatokat a Product interface-szel
-          const productData = {
-            part_id: part.part_id,
-            name: part.part_name || part.name, // Kezeli mindkét elnevezést
-            manufacturer: part.manufacturer || 'Tuning Part',
-            part_number: part.part_number || 'N/A',
-            price: part.price,
-            stock_quantity: part.stock_quantity || 0,
-            description: part.description || '',
-            image: part.image
-          };
+            <div className="mb-4 p-3 bg-black bg-opacity-25 rounded border border-secondary shadow-sm">
+              <label className={`${styles.label} text-danger d-block mb-3`}>
+                Választható Tuning Alkatrészek
+              </label>
+              <div className="row g-3"> {/* Kicsit nagyobb gap (g-3) a kártyáknak jobban áll */}
+                {availableParts.length > 0 ? (
+                  availableParts.map((part) => {
+                    // Összefésüljük az API adatokat a Product interface-szel
+                    const productData = {
+                      part_id: part.part_id,
+                      name: part.part_name || part.name, // Kezeli mindkét elnevezést
+                      manufacturer: part.manufacturer || 'Tuning Part',
+                      part_number: part.part_number || 'N/A',
+                      price: part.price,
+                      stock_quantity: part.stock_quantity || 0,
+                      description: part.description || '',
+                      image: part.image
+                    };
 
-          const isSelected = selectedParts.includes(part.part_id);
+                    const isSelected = selectedParts.includes(part.part_id);
 
-          return (
-            <div key={part.part_id} className="col-md-6 col-lg-4">
-              <div 
-                onClick={() => handlePartToggle(part.part_id)}
-                className={`h-100 rounded transition-all ${
-                  isSelected 
-                    ? 'ring-2 ring-danger border-danger shadow-[0_0_15px_rgba(220,38,38,0.3)]' 
-                    : 'opacity-75 hover:opacity-100'
-                }`}
-                style={{ 
-                  cursor: 'pointer',
-                  outline: isSelected ? '2px solid #dc3545' : 'none',
-                  transition: '0.2s all ease-in-out'
-                }}
-              >
-                {/* Itt hívjuk meg az eredeti kártyádat */}
-                <ProductCard product={productData} />
-                
-                {/* Vizuális indikátor a kijelöléshez */}
-                {isSelected && (
-                  <div className="text-center bg-danger text-white small fw-bold py-1 rounded-bottom">
-                    KIVÁLASZTVA
+                    return (
+                      <div key={part.part_id} className="col-md-6 col-lg-4">
+                        <div
+                          onClick={() => handlePartToggle(part.part_id)}
+                          className={`h-100 rounded transition-all ${isSelected
+                            ? 'ring-2 ring-danger border-danger shadow-[0_0_15px_rgba(220,38,38,0.3)]'
+                            : 'opacity-75 hover:opacity-100'
+                            }`}
+                          style={{
+                            cursor: 'pointer',
+                            outline: isSelected ? '2px solid #dc3545' : 'none',
+                            transition: '0.2s all ease-in-out'
+                          }}
+                        >
+                          {/* Itt hívjuk meg az eredeti kártyádat */}
+                          <ProductCard product={productData} />
+
+                          {/* Vizuális indikátor a kijelöléshez */}
+                          {isSelected && (
+                            <div className="text-center bg-danger text-white small fw-bold py-1 rounded-bottom">
+                              KIVÁLASZTVA
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="col-12 text-secondary small text-center py-4">
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Alkatrészek betöltése...
                   </div>
                 )}
               </div>
             </div>
-          );
-        })
-      ) : (
-        <div className="col-12 text-secondary small text-center py-4">
-          <span className="spinner-border spinner-border-sm me-2"></span>
-          Alkatrészek betöltése...
-        </div>
-      )}
-    </div>
-  </div>
-)}
-{/* PARTS VÉGE */}
-          
+          )}
+          {/* PARTS VÉGE */}
+
           <label className={styles.label}>Részletes leírás</label>
-          <textarea 
+          <textarea
             name="description"
-            className="form-control" 
-            rows={4} 
+            className="form-control"
+            rows={4}
             placeholder="Kérjük részletezze igényét..."
             value={formData.description}
             onChange={handleChange}

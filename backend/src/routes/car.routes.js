@@ -32,6 +32,8 @@ router.get("/", carController.getAllCars);
  */
 router.get("/:id", carController.getCarById);
 
+router.get("/vin/:vin", carController.getCarByVin);
+
 /**
  * @route PUT /cars/:id
  * @group Cars

@@ -36,6 +36,10 @@ exports.getCarById = async (id) => {
   return await carModel.findById(id);
 };
 
+exports.getCarByVin = async (vin) => {
+  return await carModel.findByVin(vin);
+}
+
 /**
  * Meglévő autó adatainak frissítése.
  * @async

@@ -97,6 +97,16 @@ exports.getCarById = async (req, res) => {
   }
 };
 
+exports.getCarByVin = async (req, res) => {
+  try {
+    const car = await carService.getCarByVin(req.params.vin);
+    if (!car) return res.status(404).json({ error: "Gépjármű nem található." });
+    res.json(car);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 /**
  * Gépjármű adatainak frissítése.
  * Csak az autó tulajdonosa vagy adminisztrátor hajthatja végre.

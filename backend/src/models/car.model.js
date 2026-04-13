@@ -70,6 +70,13 @@ exports.findById = async (id) => {
   return result.recordset[0] ? new Car(result.recordset[0]) : null;
 };
 
+exports.findByVin = async (vin) => {
+  const final_vin = vin.toUpperCase();
+  const pool = await getPool();
+  const result = await pool.request().input("vin", final_vin).query("SELECT * FROM car WHERE vin = @vin");
+  return result.recordset[0] ? new Car(result.recordset[0]) : null;
+};
+
 /**
  * Új autó beszúrása az adatbázisba.
  * @async
