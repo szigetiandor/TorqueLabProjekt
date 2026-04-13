@@ -1,6 +1,7 @@
 import styles from './CarDetails.module.css';
 import apiRequest from '@/lib/api';
 import Link from 'next/link';
+import { getImageUrl } from '@/lib/api';
 
 // Segédfüggvény az adatok lekéréséhez
 async function getCarDetails(id: string) {
@@ -44,7 +45,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
           {/* Bal oldal: Kép */}
           <div className="col-lg-7">
             <img
-              src={car.imageUrl || '/images/placeholder-car.jpg'}
+              src={getImageUrl(car.image_filename)}
               alt={`${car.brand} ${car.model}`}
               className={styles.mainImage}
             />

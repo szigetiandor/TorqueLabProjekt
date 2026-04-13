@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import styles from './ProductCard.module.css';
+import { getImageUrl } from '@/lib/api';
 
 // Az SQL tábládhoz igazított interface
 export interface Product {
@@ -10,13 +11,15 @@ export interface Product {
   price: number;
   stock_quantity: number;
   description: string;
-  image?: string; // Ha később lesz kép az adatbázisban
+  image_filename: string; // Ha később lesz kép az adatbázisban
 }
 
 export default function ProductCard({ product }: { product: Product }) {
   if (!product) return null;
 
   const inStock = product.stock_quantity > 0;
+
+  const productImageUrl = getImageUrl(product.image_filename);
 
   return (
     <div className={styles.card}>
@@ -26,10 +29,16 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className={styles.imageContainer}>
-        {product.image ? (
-          <div className={styles.actualImage} style={{ backgroundImage: `url(${product.image})` }} />
-        ) : (
-          <div className={styles.placeholderImg}>
+        {/* Mivel a getImageUrl már alapból ad vissza valamit, 
+            itt eldöntheted, hogy mindig megmutatod-e a képet */}
+        <div 
+          className={styles.actualImage} 
+          style={{ backgroundImage: `url(${productImageUrl})` }} 
+        />
+        
+        {/* Ha mégis meg akarod tartani a "No Image" feliratot, ha nincs adat: */}
+        {!product.image_filename && (
+          <div className={styles.noImageOverlay}>
             <span className="text-uppercase opacity-25 fw-bold">No Image</span>
           </div>
         )}
@@ -49,13 +58,14 @@ export default function ProductCard({ product }: { product: Product }) {
           <div className={styles.priceTag}>
             {Number(product.price).toLocaleString('hu-HU')} <small className={styles.currency}>Ft</small>
           </div>
-
+{/*
           <Link 
             href={`/catalog/${product.part_id}`} 
             className={`${styles.addBtn} text-decoration-none text-center`}
           >
              Részletek
           </Link>
+*/}
         </div>
       </div>
     </div>

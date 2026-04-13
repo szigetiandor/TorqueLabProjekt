@@ -13,7 +13,7 @@ class Part {
   /**
    * @param {Object} params - Az alkatrész tulajdonságai.
    */
-  constructor({part_id, name, manufacturer, part_number, price, stock_quantity, description, category}) {
+  constructor({part_id, name, manufacturer, part_number, price, stock_quantity, description, category, image_filename}) {
     this.part_id = part_id;
     this.name = name;
     this.manufacturer = manufacturer;
@@ -22,6 +22,7 @@ class Part {
     this.stock_quantity = stock_quantity;
     this.description = description;
     this.category = category;
+    this.image_filename = image_filename
   }
 }
 

@@ -38,9 +38,7 @@ CREATE TABLE car (
     owner_id INT NOT NULL,
     [image_filename] VARCHAR(255),
     [description] VARCHAR(MAX),
-    image_id INT,
 
-    FOREIGN KEY (image_id) REFERENCES [image](image_id),
     FOREIGN KEY (owner_id) REFERENCES [user](user_id)
 );
 
@@ -126,7 +124,7 @@ VALUES
 INSERT INTO car
 (vin, brand, model, production_year, engine, mileage, owner_id, [description], for_sale, price)
 VALUES
-('WF0AXXWPMAG123456', 'Ford', 'Racing Puma', 2000, '1.7 Zetec-S VCT', 10000, 1,
+('WF0AXXWPMAG123111', 'Ford', 'Racing Puma', 2000, '1.7 Zetec-S VCT', 10000, 1,
  'Ez a Ford Racing Puma már gyárilag is különlegesség, de ez a példány egy átgondolt, pályára optimalizált build.
 
 A gyári 1.7 Zetec-S VCT (FHBA) motor teljes felújításon esett át: kovácsolt dugattyúk, erősített hajtókarok és finomhangolt ECU került bele. A szívóoldalon egyedi portolt szívósor és sportlégszűrő dolgozik, míg a kipufogórendszer rozsdamentes, nagyobb átmérőjű leömlővel és sport katalizátorral készült. Az eredmény kb. 155–165 LE, ami egy ilyen könnyű kasztniban brutálisan élénk.
@@ -137,7 +135,7 @@ A hajtásláncban a gyári sperrdifferenciál (LSD) mellé rövidebb áttételű
 , 1, 18000.00),
 
 
-('1FA6P8TH0J5102345', 'Ford', 'GT (fehérholló)', 2006, '5.4l v8', 42000, 2,
+('1FA6P8TH0J5102322', 'Ford', 'GT (fehérholló)', 2006, '5.4l v8', 42000, 2,
  'Ez a Ford GT már alapból is szupersport kategória, de itt komoly teljesítménynövelés történt.
 
 Az 5.4 literes kompresszoros V8 (Modular) motor kapott egy nagyobb teljesítményű Whipple kompresszort, egyedi ECU hangolást és nagy átfolyású befecskendezőket. A hűtésrendszer is fejlesztve lett (nagyobb intercooler), hogy stabilan kezelje a megnövelt teljesítményt. A teljesítmény így kb. 700–750 LE körül alakul.
@@ -150,7 +148,7 @@ Külsőleg karbon elemek (splitter, diffuser) javítják az aerodinamikát.',
   1, 450000.00),
 
 
-('WF0FXXGCDGJ987654', 'Ford', 'Mustang SVT Cobra', 2004, '4.6 V8 Supercharged', 120000, 1,
+('WF0FXXGCDGJ987633', 'Ford', 'Mustang SVT Cobra', 2004, '4.6 V8 Supercharged', 120000, 1,
  'Ford Mustang SVT Cobra „Terminator” (2004) -- A utcai vadállat
 
 A legendás Terminator Cobra itt egy brutális utcai géppé lett építve.
@@ -165,14 +163,14 @@ A fékrendszer nagyobb Brembo tárcsákkal és 4 dugattyús nyergekkel lett fejl
   1, 45000.00);
 
 INSERT INTO part
-(name, manufacturer, part_number, price, stock_quantity, description, category)
+(name, manufacturer, part_number, price, stock_quantity, [description], category, image_filename)
 VALUES
-('Oil Filter', 'Bosch', 'OF-1234', 4500.00, 30, 'Standard oil filter', 'Engine'),
-('Brake Pad Set (Front)', 'Brembo', 'BP-FORD-01', 32000.00, 12, 'Front brake pads', 'Brakes'),
-('Performance Air Filter', 'K&N', 'KN-33-2865', 18000.00, 5, 'High-flow air filter', 'Engine');
+('Oil Filter', 'Bosch', 'OF-1234', 4500.00, 30, 'Standard oil filter', 'Engine', 'part1.jpg'),
+('Brake Pad Set (Front)', 'Brembo', 'BP-FORD-01', 32000.00, 12, 'Front brake pads', 'Brakes', ''),
+('Performance Air Filter', 'K&N', 'KN-33-2865', 18000.00, 5, 'High-flow air filter', 'Engine', '');
 
 INSERT INTO service_log
-(car_id, performed_by, service_date, description)
+(car_id, performed_by, service_date, [description])
 VALUES
 (1, 1, '2024-03-15', 'Annual service, oil and filter change'),
 (2, 1, '2024-06-02', 'Pre-tuning inspection'),
