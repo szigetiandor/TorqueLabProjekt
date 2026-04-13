@@ -30,18 +30,11 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <div className={styles.imageContainer}>
         {/* Mivel a getImageUrl már alapból ad vissza valamit, 
-            itt eldöntheted, hogy mindig megmutatod-e a képet */}
+            itt eldöntheted, hogy mindig megmutatod-e a képet */} 
         <div 
           className={styles.actualImage} 
           style={{ backgroundImage: `url(${productImageUrl})` }} 
         />
-        
-        {/* Ha mégis meg akarod tartani a "No Image" feliratot, ha nincs adat: */}
-        {!product.image_filename && (
-          <div className={styles.noImageOverlay}>
-            <span className="text-uppercase opacity-25 fw-bold">No Image</span>
-          </div>
-        )}
       </div>
 
       <div className={styles.content}>
