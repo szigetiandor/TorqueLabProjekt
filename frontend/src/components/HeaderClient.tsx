@@ -56,7 +56,7 @@ export default function HeaderClient({ user }: { user: any }) {
               <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/service" onClick={closeMenu}>Szervíz</Link></li>
               
               {/* Ez visz a katalógushoz */}
-              <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/catalog" onClick={closeMenu}>Katalógus</Link></li>
+              <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/catalog" onClick={closeMenu}>Garázsunk</Link></li>
 
               <li className={`nav-item dropdown px-lg-2 ${styles.dropdownContainer}`}>
                 <button className={styles.navLinkCustom} onClick={toggleDropdown} type="button">
