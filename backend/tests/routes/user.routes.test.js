@@ -4,7 +4,6 @@ const userRoutes = require('../../src/routes/user.routes');
 const userController = require('../../src/controllers/user.controller');
 const authMiddleware = require('../../src/middleware/auth.middleware');
 
-// Kontroller és Middleware mockolása
 jest.mock('../../src/controllers/user.controller');
 jest.mock('../../src/middleware/auth.middleware');
 
@@ -17,9 +16,9 @@ describe('Protected User Routes', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         
-        // Alapértelmezett viselkedés: minden middleware továbbenged (sikeres auth)
+        
         authMiddleware.verifyToken.mockImplementation((req, res, next) => {
-            req.user = { user_id: '5', is_admin: false }; // Bejelentkezett user szimulálása
+            req.user = { user_id: '5', is_admin: false }; 
             next();
         });
         authMiddleware.verifyAdmin.mockImplementation((req, res, next) => {
@@ -43,7 +42,7 @@ describe('Protected User Routes', () => {
 
     describe('GET /users (Admin Only)', () => {
         it('Sikeres lekérés Admin jogosultsággal', async () => {
-            // Beállítjuk az admin státuszt a teszthez
+            
             authMiddleware.verifyToken.mockImplementation((req, res, next) => {
                 req.user = { user_id: '1', is_admin: true };
                 next();
@@ -57,7 +56,7 @@ describe('Protected User Routes', () => {
         });
 
         it('Hiba: Sima felhasználó nem listázhat (403)', async () => {
-            // Marad a default user (is_admin: false)
+            
             const res = await request(app).get('/users');
 
             expect(res.statusCode).toBe(403);
@@ -77,7 +76,7 @@ describe('Protected User Routes', () => {
         });
 
         it('Hiba: Token hiánya esetén elutasít (401/403)', async () => {
-            // Szimuláljuk a sikertelen verifyToken-t
+            
             authMiddleware.verifyToken.mockImplementation((req, res, next) => {
                 res.status(401).json({ error: "No token provided" });
             });

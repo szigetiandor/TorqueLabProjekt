@@ -19,14 +19,14 @@ const jwt = require('jsonwebtoken')
  * @returns {Promise<Object>} A létrehozott felhasználó.
  */
 exports.createUser = async ({ name, email, password, is_admin }) => {
-    // Üzleti logika: Email formátum és létezés ellenőrzése
+    
     if (!email || !email.includes('@')) throw new Error("Érvénytelen email formátum!");
     if (!password || password.length < 6) throw new Error("A jelszónak legalább 6 karakternek kell lennie!");
 
     const existingUser = await userModel.findByEmail(email);
     if (existingUser) throw new Error("Ez az email cím már foglalt!");
 
-    // Jelszó titkosítása
+    
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
     
@@ -70,7 +70,7 @@ exports.updateUser = async (id, data) => {
     const { name, email, password, is_admin } = data;
     
     let finalHash = existingUser._password_hash;
-    // Csak akkor hashelünk újra, ha kaptunk új jelszót
+    
     if (password && password.trim() !== "") {
         if (password.length < 6) throw new Error("Az új jelszónak is legalább 6 karakternek kell lennie!");
         finalHash = await bcrypt.hash(password, 10);
@@ -108,11 +108,11 @@ exports.loginUser = async (email, password) => {
     const user = await userModel.findByEmail(email);
     if (!user) return null;
 
-    // Jelszó ellenőrzése a mentett hash-sel
+    
     const isPasswordCorrect = await bcrypt.compare(password, user._password_hash);
     if (!isPasswordCorrect) return null;
 
-    // Token generálása (a jelszó hash nélkül!)
+    
     const token = jwt.sign(
         user.toJSON(), 
         process.env.JWT_SECRET || 'fallback_secret', 

@@ -18,7 +18,7 @@ const config = {
   server: process.env.DB_HOST,
   options: {
     encrypt: false, 
-    trustServerCertificate: true, // Helyi fejlesztésnél szükséges a tanúsítvány elfogadásához
+    trustServerCertificate: true, 
   },
 };
 
@@ -39,7 +39,7 @@ async function getPool() {
 async function testConnection() {
   try {
     const pool = await getPool();
-    // Sikeres kapcsolódás után azonnal lezárjuk a teszt kapcsolatot
+    
     await pool.close();
     return { connection: true, error: null };
   } catch (err) {

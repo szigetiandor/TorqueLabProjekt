@@ -4,7 +4,6 @@ const servicePartRoutes = require('../../src/routes/servicePart.routes');
 const servicePartController = require('../../src/controllers/servicePart.controller');
 const authMiddleware = require('../../src/middleware/auth.middleware');
 
-// Kontroller és Middleware mockolása
 jest.mock('../../src/controllers/servicePart.controller');
 jest.mock('../../src/middleware/auth.middleware');
 
@@ -17,7 +16,7 @@ describe('ServicePart Routes & Security', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         
-        // Alapértelmezett: A token valid, de nem admin
+        
         authMiddleware.verifyToken.mockImplementation((req, res, next) => {
             req.user = { user_id: '123', is_admin: false };
             next();
@@ -40,14 +39,14 @@ describe('ServicePart Routes & Security', () => {
 
             expect(res.statusCode).toBe(200);
             expect(servicePartController.getAllServiceParts).toHaveBeenCalled();
-            // A tokent nem is kell ellenőrizni ennél a route-nál
+            
             expect(authMiddleware.verifyToken).not.toHaveBeenCalled();
         });
     });
 
     describe('POST /service-parts (Admin Only)', () => {
         it('Sikeres rögzítés Admin jogosultsággal (201)', async () => {
-            // Admin szimulálása
+            
             authMiddleware.verifyToken.mockImplementation((req, res, next) => {
                 req.user = { user_id: '1', is_admin: true };
                 next();

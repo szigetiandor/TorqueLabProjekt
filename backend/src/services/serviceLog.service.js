@@ -57,7 +57,7 @@ exports.deleteService = async (id) => {
  * @returns {Promise<Array>} A kommentek listája a szerzők nevével.
  */
 exports.getCommentsByServiceId = async (serviceId) => {
-    // A Service réteg itt hídként szolgál egy másik modell felé
+    
     const comments = await serviceCommentModel.findByServiceId(serviceId);  
     return comments;
 };

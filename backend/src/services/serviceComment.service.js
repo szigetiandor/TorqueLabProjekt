@@ -12,8 +12,8 @@ const serviceCommentModel = require('../models/serviceComment.model')
  * @returns {Promise<Object>} A mentett komment objektum.
  */
 exports.createServiceComment = async (data) => {
-  // Itt lehetne implementálni pl. egy trágárság-szűrőt vagy 
-  // értesítést küldeni az autó tulajdonosának.
+  
+  
   return await serviceCommentModel.create(data)
 }
 

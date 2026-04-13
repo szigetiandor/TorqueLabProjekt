@@ -4,7 +4,6 @@ const serviceLogRoutes = require('../../src/routes/serviceLog.routes');
 const serviceLogController = require('../../src/controllers/serviceLog.controller');
 const authMiddleware = require('../../src/middleware/auth.middleware');
 
-// Kontroller és Middleware mockolása
 jest.mock('../../src/controllers/serviceLog.controller');
 jest.mock('../../src/middleware/auth.middleware');
 
@@ -17,13 +16,13 @@ describe('ServiceLog Routes Unit Tests', () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        // Alapértelmezett: Érvényes token, sima felhasználó (nem admin)
+        
         authMiddleware.verifyToken.mockImplementation((req, res, next) => {
             req.user = { user_id: 10, is_admin: false };
             next();
         });
 
-        // Alapértelmezett: Admin ellenőrzés elutasítva (ha a user nem admin)
+        
         authMiddleware.verifyAdmin.mockImplementation((req, res, next) => {
             if (req.user && req.user.is_admin) {
                 next();
@@ -33,7 +32,7 @@ describe('ServiceLog Routes Unit Tests', () => {
         });
     });
 
-    // --- OLVASÁSI MŰVELETEK (Token szükséges, de nem kell Admin) ---
+    
 
     describe('GET /service-logs/my', () => {
         it('Sikeres lekérés bejelentkezett felhasználóként', async () => {
@@ -74,7 +73,7 @@ describe('ServiceLog Routes Unit Tests', () => {
         });
     });
 
-    // --- ÍRÁSI MŰVELETEK ---
+    
 
     describe('PUT /service-logs/:id', () => {
         it('Módosítás tiltása sima felhasználónak', async () => {
@@ -112,7 +111,7 @@ describe('ServiceLog Routes Unit Tests', () => {
         });
     });
 
-    // --- AUTH EDGE CASES ---
+    
 
     describe('Global Authentication Check', () => {
         it('Edge Case: Minden útvonal 401-et ad, ha nincs érvényes token', async () => {

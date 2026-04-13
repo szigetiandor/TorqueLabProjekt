@@ -1,7 +1,6 @@
 const userController = require('../../src/controllers/user.controller');
 const userService = require('../../src/services/user.service');
 
-// Mockoljuk a szerviz réteget
 jest.mock('../../src/services/user.service');
 
 describe('UserController Unit Tests', () => {

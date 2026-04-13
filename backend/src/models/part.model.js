@@ -40,21 +40,21 @@ exports.findAll = async (searchQuery, maxPrice, category) => {
   // Alap lekérdezés: minden terméket kérünk (1=1 a dinamikus AND fűzéshez)
   let sql = "SELECT * FROM part WHERE 1=1";
 
-  // SZŰRÉS: Keresőszó (fuzzy search több mezőben)
+  
   if (searchQuery && searchQuery !== 'all' && searchQuery !== '') {
-    // Kötőjelek cseréje szóközre a kereshetőség javításáért
+    
     const cleanQuery = searchQuery.replace(/-/g, ' ');
     request.input("search", `%${cleanQuery}%`);
     sql += " AND ([name] LIKE @search OR manufacturer LIKE @search OR [description] LIKE @search)";
   }
 
-  // SZŰRÉS: Maximális ár limit
+  
   if (maxPrice) {
     request.input("maxPrice", maxPrice);
     sql += " AND price <= @maxPrice";
   }
 
-  // SZŰRÉS: Kategória szerinti szűrés
+  
   if (category && category !== 'all') { 
       request.input("category", category);
       sql += " AND category = @category";

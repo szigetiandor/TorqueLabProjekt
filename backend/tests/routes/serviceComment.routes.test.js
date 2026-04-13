@@ -4,7 +4,6 @@ const serviceCommentRoutes = require('../../src/routes/serviceComment.routes');
 const serviceCommentController = require('../../src/controllers/serviceComment.controller');
 const authMiddleware = require('../../src/middleware/auth.middleware');
 
-// Mockolás
 jest.mock('../../src/controllers/serviceComment.controller');
 jest.mock('../../src/middleware/auth.middleware');
 
@@ -17,7 +16,7 @@ describe('ServiceComment Routes & Authorization', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         
-        // Alapértelmezett beállítás: Bejelentkezett, de nem admin felhasználó
+        
         authMiddleware.verifyToken.mockImplementation((req, res, next) => {
             req.user = { user_id: 'user123', is_admin: false };
             next();
@@ -68,7 +67,7 @@ describe('ServiceComment Routes & Authorization', () => {
         });
 
         it('Sikeres létrehozás Admin fiókkal', async () => {
-            // Admin szimulálása
+            
             authMiddleware.verifyToken.mockImplementation((req, res, next) => {
                 req.user = { user_id: 'admin1', is_admin: true };
                 next();

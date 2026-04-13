@@ -1,7 +1,6 @@
 const servicePartController = require("../../src/controllers/servicePart.controller");
 const servicePartService = require("../../src/services/servicePart.service");
 
-// Szerviz réteg mockolása
 jest.mock("../../src/services/servicePart.service");
 
 describe("ServicePartController Unit Tests", () => {
