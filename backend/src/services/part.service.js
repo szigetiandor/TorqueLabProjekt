@@ -22,8 +22,8 @@ exports.createPart = async (data) => {
  * @param {number} [price] - Maximális ár, ami alatt az alkatrészeket keressük.
  * @returns {Promise<Array>} A keresési feltételeknek megfelelő alkatrészek tömbje.
  */
-exports.getAllParts = async (query, price) => {
-  return await partModel.findAll(query, price)
+exports.getAllParts = async (query, price, category) => {
+  return await partModel.findAll(query, price, category)
 }
 
 /**

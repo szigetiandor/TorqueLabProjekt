@@ -12,6 +12,7 @@ export default function PerformancePartsPage() {
   // Paraméterek figyelése
   const carFilter = searchParams.get('car') || '';
   const priceFilter = searchParams.get('price') || '1500000';
+  const categoryFilter = searchParams.get('category') || '';
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ export default function PerformancePartsPage() {
       try {
         // A 'car' paramétert küldjük el 'query' néven a backendnek
         const response = await fetch(
-          `${API_URL}/parts?query=${carFilter}&price=${priceFilter}`
+          `${API_URL}/parts?query=${carFilter}&price=${priceFilter}&category=${categoryFilter}`
         );
 
         if (!response.ok) throw new Error('Hiba a lekérésnél');
@@ -38,7 +39,7 @@ export default function PerformancePartsPage() {
     };
 
     fetchProducts();
-  }, [carFilter, priceFilter, API_URL]);
+  }, [carFilter, priceFilter, categoryFilter, API_URL]);
 
   return (
     <main className={styles.mainWrapper} style={{ backgroundColor: '#000', minHeight: '100vh', paddingTop: '100px' }}>

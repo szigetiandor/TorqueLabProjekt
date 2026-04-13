@@ -17,8 +17,8 @@ const partService = require("../services/part.service")
  */
 exports.getAllParts = async (req, res) => {
   try {
-    const { query, price } = req.query;
-    const parts = await partService.getAllParts(query, price);
+    const { query, price, category } = req.query;
+    const parts = await partService.getAllParts(query, price, category);
     res.json(parts);
   }
   catch (err) {
