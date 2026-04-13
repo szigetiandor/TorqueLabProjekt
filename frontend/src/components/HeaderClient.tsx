@@ -58,36 +58,8 @@ export default function HeaderClient({ user }: { user: any }) {
               {/* Ez visz a katalógushoz */}
               <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/catalog" onClick={closeMenu}>Garázsunk</Link></li>
 
-              <li className={`nav-item dropdown px-lg-2 ${styles.dropdownContainer}`}>
-                <button className={styles.navLinkCustom} onClick={toggleDropdown} type="button">
-                  <span className="text-danger">Alkatrészek</span>
-                  <span className={`ms-1 text-danger transition-all ${isDropdownOpen ? 'rotate-180' : ''}`} style={{ fontSize: '9px' }}>
-                    {isDropdownOpen ? '▲' : '▼'}
-                  </span>
-                </button>
-                <div className={`${styles.dropdownMenuCustom} ${isDropdownOpen ? styles.show : ''}`}>
-                  <div className="container">
-                    <div className="row g-4">
-                      <div className="col-md-6 border-end border-secondary border-opacity-25">
-                        <span className={styles.columnTitle}>Gyors Keresés</span>
-                        <Link className={styles.dropdownItemCustom} href="/performance-parts" onClick={closeMenu}>
-                          <span className="fw-bold">ÖSSZES TERMÉK</span>
-                        </Link>
-                        {/* Itt a car paramétert használjuk, amit a Page és a Sidebar is ért */}
-                        <Link className={styles.dropdownItemCustom} href="/performance-parts?car=Focus" onClick={closeMenu}>
-                          <span className="fw-bold">FORD FOCUS ALKATRÉSZEK</span>
-                        </Link>
-                      </div>
-                      <div className="col-md-6 ps-md-5">
-                        <span className={styles.columnTitle}>Kiemelt Modellek</span>
-                        <Link className={styles.dropdownItemCustom} href="/performance-parts?car=Mustang" onClick={closeMenu}>
-                          <span className="fw-bold">MUSTANG SPECIFIKUS</span>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
+              <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/performance-parts" onClick={closeMenu}>Alkatrészek</Link></li>
+
               <li className="nav-item px-lg-2"><Link className={styles.navLinkCustom} href="/aboutus" onClick={closeMenu}>Rólunk</Link></li>
             </ul>
 

@@ -36,8 +36,10 @@ CREATE TABLE car (
     price DECIMAL(10,2) NOT NULL DEFAULT 0,
     for_sale BIT NOT NULL DEFAULT 0,
     owner_id INT NOT NULL,
-    [description] VARCHAR(255),
+    [description] VARCHAR(MAX),
+    image_id INT,
 
+    FOREIGN KEY (image_id) REFERENCES [image](image_id),
     FOREIGN KEY (owner_id) REFERENCES [user](user_id)
 );
 
@@ -111,12 +113,45 @@ INSERT INTO [user] (name, email, password_hash, is_admin) VALUES
 
 
 INSERT INTO car
-(vin, brand, model, production_year, engine, mileage, owner_id, for_sale)
+(vin, brand, model, production_year, engine, mileage, owner_id, description, for_sale, price)
 VALUES
-('WF0AXXWPMAG123456', 'Ford', 'Focus', 2018, '1.5 EcoBoost', 85000, 1, 1),
-('1FA6P8TH0J5102345', 'Ford', 'Mustang', 2020, '2.3 EcoBoost', 42000, 2, 1),
-('WF0FXXGCDGJ987654', 'Ford', 'Fiesta', 2016, '1.0 EcoBoost', 120000, 1, 1),
-('WF0FXXGCDGJ987669', 'Ford', 'Fiesta Pro Max', 2016, '1.0 EcoBoost', 120000, 1, 0);
+('WF0AXXWPMAG123456', 'Ford', 'Racing Puma', 2000, '1.7 Zetec-S VCT', 10000, 1,
+ 'Ez a Ford Racing Puma már gyárilag is különlegesség, de ez a példány egy átgondolt, pályára optimalizált build.
+
+A gyári 1.7 Zetec-S VCT (FHBA) motor teljes felújításon esett át: kovácsolt dugattyúk, erősített hajtókarok és finomhangolt ECU került bele. A szívóoldalon egyedi portolt szívósor és sportlégszűrő dolgozik, míg a kipufogórendszer rozsdamentes, nagyobb átmérőjű leömlővel és sport katalizátorral készült. Az eredmény kb. 155–165 LE, ami egy ilyen könnyű kasztniban brutálisan élénk.
+
+A futómű teljesen átalakított: állítható coilover szett (Bilstein/KW kategória), poliuretán szilentek, valamint megerősített stabilizátorok. A gyári Alcon fékrendszer felújítva, sport betétekkel és fémhálós fékcsövekkel.
+
+A hajtásláncban a gyári sperrdifferenciál (LSD) mellé rövidebb áttételű váltó került, így még agresszívebb kigyorsításokra képes.'
+, 1, 18000.00),
+
+
+('1FA6P8TH0J5102345', 'Ford', 'GT (fehérholló)', 2006, '5.4l v8', 42000, 2,
+ 'Ez a Ford GT már alapból is szupersport kategória, de itt komoly teljesítménynövelés történt.
+
+Az 5.4 literes kompresszoros V8 (Modular) motor kapott egy nagyobb teljesítményű Whipple kompresszort, egyedi ECU hangolást és nagy átfolyású befecskendezőket. A hűtésrendszer is fejlesztve lett (nagyobb intercooler), hogy stabilan kezelje a megnövelt teljesítményt. A teljesítmény így kb. 700–750 LE körül alakul.
+
+A kipufogórendszer teljesen egyedi, titán hátsó dobokkal, brutális hanggal, de még utcán is használható.
+
+A futómű finomhangolt: állítható lengéscsillapítók és módosított geometria, hogy nagy sebességnél is stabil maradjon. A fékek karbon-kerámia upgrade-et kaptak.
+
+Külsőleg karbon elemek (splitter, diffuser) javítják az aerodinamikát.',
+  1, 450000.00),
+
+
+('WF0FXXGCDGJ987654', 'Ford', 'Mustang SVT Cobra', 2004, '4.6 V8 Supercharged', 120000, 1,
+ 'Ford Mustang SVT Cobra „Terminator” (2004) -- A utcai vadállat
+
+A legendás Terminator Cobra itt egy brutális utcai géppé lett építve.
+
+A gyári 4.6 V8 Supercharged (Y kód) motor kapott egy nagyobb 2.3L Whipple kompresszort, kovácsolt belsőt (dugattyúk, hajtókarok), valamint nagyobb üzemanyag-rendszert (pumpák, injektorok). Egyedi ECU hangolással a teljesítmény eléri a 600–650 LE-t.
+
+A kipufogó teljesen átépített: hosszú leömlők, X-pipe és sport dobok – mély, agresszív hanggal.
+
+A futómű: állítható coilover szett, megerősített hátsó híd és drag-spec féltengelyek, hogy bírja a brutális nyomatékot. A váltó megerősített kuplungot és rövidebb áttételezést kapott.
+
+A fékrendszer nagyobb Brembo tárcsákkal és 4 dugattyús nyergekkel lett fejlesztve.',
+  1, 45000.00);
 
 INSERT INTO part
 (name, manufacturer, part_number, price, stock_quantity, description, category)
