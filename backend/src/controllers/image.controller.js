@@ -1,5 +1,6 @@
 const imageService = require('../services/image.service')
 const path = require('path')
+const fs = require('fs').promises;
 
 exports.getFile = async (req, res) => {
   try {

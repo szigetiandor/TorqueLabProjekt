@@ -1,4 +1,11 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+
+export const getImageUrl = (fileName) => {
+  if (!fileName) return "placeholder.jpg";
+  console.log(BACKEND_BASE_URL)
+  return `${BACKEND_BASE_URL}/public/images/${fileName}`;
+};
 
 /**
  * Saját apiRequest fetch-alapú segédfüggvény

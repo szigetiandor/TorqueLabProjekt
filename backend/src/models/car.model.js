@@ -13,7 +13,7 @@ class Car {
   /**
    * @param {Object} params - Az autó tulajdonságai.
    */
-  constructor({ car_id, vin, brand, model, production_year, engine, mileage, price, imageUrl, description, build_type, owner_id }) {
+  constructor({ car_id, vin, brand, model, production_year, engine, mileage, price, image_filename, description, build_type, owner_id }) {
     this.car_id = car_id;
     this.vin = vin;
     this.brand = brand;
@@ -22,7 +22,7 @@ class Car {
     this.engine = engine;
     this.mileage = mileage;
     this.price = price;
-    this.imageUrl = imageUrl;
+    this.image_filename = image_filename;
     this.description = description;
     this.build_type = build_type;
     this.owner_id = owner_id;
@@ -55,7 +55,10 @@ exports.findAll = async (modelFilter, typeFilter, forSaleFilter) => {
   }
 
   const result = await request.query(sql);
-  return result.recordset.map(x => new Car(x));
+  // console.log(`db cars: ${JSON.stringify(result)}`)
+  const cars = result.recordset.map(x => new Car(x));
+  console.log(`db cars: ${JSON.stringify(cars)}`)
+  return cars
 };
 
 /**

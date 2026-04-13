@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './Catalog.module.css';
-import apiRequest from '@/lib/api';
+import { apiRequest, getImageUrl } from '@/lib/api';
 
 export default function CatalogPage() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,10 +11,8 @@ export default function CatalogPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Garázskapu animáció indítása
     const timer = setTimeout(() => setIsOpen(true), 500);
 
-    // 2. Autók lekérése a backendről
     async function fetchCars() {
       try {
         const data = await apiRequest(`/cars?for_sale=true`, {
@@ -29,13 +27,11 @@ export default function CatalogPage() {
     }
 
     fetchCars();
-
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <main className={styles.garageScene}>
-      {/* GARÁZSKAPU */}
       <div className={`${styles.garageDoor} ${isOpen ? styles.doorOpen : ''}`}>
         <div className={styles.shutterHandle}></div>
         <div className={styles.doorLogo}>
@@ -55,7 +51,6 @@ export default function CatalogPage() {
 
         <div className="row justify-content-center g-5">
           {loading ? (
-            /* Betöltési állapot (opcionális) */
             <div className="text-center text-white">
               <div className="spinner-border text-danger" role="status">
                 <span className="visually-hidden">Loading...</span>
@@ -63,40 +58,43 @@ export default function CatalogPage() {
               <p className="mt-2">Motorok melegítése...</p>
             </div>
           ) : cars.length > 0 ? (
-            cars.map((car) => (
-              <div key={car.car_id} className="col-12 col-xl-10">
-                <div className={styles.industrialCard}>
-                  <div className="row g-0">
-                    <div className="col-md-7">
-                      <img
-                        src={car.imageUrl || "/car-placeholder.jpg"}
-                        alt={`${car.brand} ${car.model}`}
-                        className={styles.carImg}
-                      />
-                    </div>
-                    <div className="col-md-5 p-4 d-flex flex-column justify-content-center">
-                      <div className={styles.buildBadge}>
-                        {car.build_type || 'Performance Build'}
-                      </div>
-                      <h2 className="h1 mb-3">{car.brand} {car.model}</h2>
-                      <p className={styles.description}>{car.description}</p>
-                      <div className="mt-auto d-flex justify-content-between align-items-center">
-                        <span className={styles.priceTag}>
-                          {new Intl.NumberFormat('hu-HU').format(car.price)} Ft
-                        </span>
+            cars.map((car) => {
+              // IDE KERÜL A LOGOLÁS
+              console.log(`Car ID: ${car.car_id}, Image filename:`, car.image_filename);
 
-                        {/* Gomb helyett Link használata az ID-val */}
-                        <Link href={`/catalog/${car.car_id}`} className={styles.viewBtn}>
-                          Specifikációk
-                        </Link>
+              return (
+                <div key={car.car_id} className="col-12 col-xl-10">
+                  <div className={styles.industrialCard}>
+                    <div className="row g-0">
+                      <div className="col-md-7">
+                        <img
+                          src={getImageUrl(car.image_filename)}
+                          alt={`${car.brand} ${car.model}`}
+                          className={styles.carImg}
+                        />
+                      </div>
+                      <div className="col-md-5 p-4 d-flex flex-column justify-content-center">
+                        <div className={styles.buildBadge}>
+                          {car.build_type || 'Performance Build'}
+                        </div>
+                        <h2 className="h1 mb-3">{car.brand} {car.model}</h2>
+                        <p className={styles.description}>{car.description}</p>
+                        <div className="mt-auto d-flex justify-content-between align-items-center">
+                          <span className={styles.priceTag}>
+                            {new Intl.NumberFormat('hu-HU').format(car.price)} Ft
+                          </span>
+
+                          <Link href={`/catalog/${car.car_id}`} className={styles.viewBtn}>
+                            Specifikációk
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
-            /* Ha nincs eladó autó, de a betöltés kész */
             <div className="text-center text-white py-5">
               <h3 className="text-secondary">Jelenleg minden autónk gazdára talált.</h3>
               <p>Nézz vissza később az újabb projektekért!</p>

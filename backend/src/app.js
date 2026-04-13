@@ -1,5 +1,6 @@
 const express = require("express")
 const cookieParser = require("cookie-parser")
+const path = require("path")
 
 const cors = require("cors") // bocsi ,de elv kell a cors hogy be tudjak logolni
 
@@ -14,6 +15,10 @@ app.use(cors({
 
 app.use(express.json())
 app.use(cookieParser())
+
+// console.log(path.join(__dirname, '../public'))
+app.use('/public', express.static(path.join(__dirname, '../public')));
+
 app.use('/api/users', require("./routes/user.routes"))
 app.use('/api/cars', require("./routes/car.routes"))
 app.use('/api/service-logs', require("./routes/serviceLog.routes"))

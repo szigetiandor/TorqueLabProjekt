@@ -37,6 +37,7 @@ CREATE TABLE car (
     for_sale BIT NOT NULL DEFAULT 0,
     owner_id INT NOT NULL,
     [description] VARCHAR(255),
+    [image_filename] VARCHAR(255),
 
     FOREIGN KEY (owner_id) REFERENCES [user](user_id)
 );
@@ -50,7 +51,8 @@ CREATE TABLE part (
     stock_quantity INT NOT NULL DEFAULT 0,
     [description] VARCHAR(255),
     discount_factor DECIMAL(5, 4) NOT NULL DEFAULT 1.0000,
-     category VARCHAR(50) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    [image_filename] VARCHAR(255),
 
     CONSTRAINT CK_Valid_Discount
     CHECK (0.0000 <= discount_factor AND discount_factor <= 1.0000)
@@ -111,12 +113,13 @@ INSERT INTO [user] (name, email, password_hash, is_admin) VALUES
 
 
 INSERT INTO car
-(vin, brand, model, production_year, engine, mileage, owner_id, for_sale)
+(vin, brand, model, production_year, engine, mileage, owner_id, for_sale, image_filename)
 VALUES
-('WF0AXXWPMAG123456', 'Ford', 'Focus', 2018, '1.5 EcoBoost', 85000, 1, 1),
-('1FA6P8TH0J5102345', 'Ford', 'Mustang', 2020, '2.3 EcoBoost', 42000, 2, 1),
-('WF0FXXGCDGJ987654', 'Ford', 'Fiesta', 2016, '1.0 EcoBoost', 120000, 1, 1),
-('WF0FXXGCDGJ987669', 'Ford', 'Fiesta Pro Max', 2016, '1.0 EcoBoost', 120000, 1, 0);
+('WF0AXXWPMAG123456', 'Ford', 'Focus', 2018, '1.5 EcoBoost', 85000, 1, 1, 'car1.jpg'),
+('1FA6P8TH0J5102345', 'Ford', 'Mustang', 2020, '2.3 EcoBoost', 42000, 2, 1, 'car2.jpg'),
+('WF0FXXGCDGJ987654', 'Ford', 'Fiesta', 2016, '1.0 EcoBoost', 120000, 1, 1, 'car3.jpg'),
+('WF0FXXGCDGJ987655', 'Ford', 'Fiesta NO IMG', 2016, '1.0 EcoBoost', 120000, 1, 1, ''),
+('WF0FXXGCDGJ987669', 'Ford', 'Fiesta Pro Max', 2016, '1.0 EcoBoost', 120000, 1, 0, '');
 
 INSERT INTO part
 (name, manufacturer, part_number, price, stock_quantity, description, category)
