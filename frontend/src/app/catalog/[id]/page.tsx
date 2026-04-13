@@ -42,7 +42,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
     <main className={styles.container}>
       <div className="container py-5">
         <div className="row g-5">
-          {/* Bal oldal: Kép */}
+  
           <div className="col-lg-7">
             <img
               src={getImageUrl(car.image_filename)}
@@ -51,7 +51,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
             />
           </div>
 
-          {/* Jobb oldal: Adatok */}
+
           <div className="col-lg-5 text-white">
             <span className="text-danger fw-bold text-uppercase">{car.brand}</span>
             <h1 className="display-4 fw-bold">{car.model}</h1>
@@ -78,7 +78,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
                 {car.price ? `${car.price.toLocaleString()} Ft` : "Ár kérésre"}
               </h2>
 
-              {/* A gombot lecseréljük egy Link komponensre, megtartva a Bootstrap osztályokat */}
+
               <Link
                 href="/contact"
                 className="btn btn-danger btn-lg w-100 mt-4 fw-bold d-flex align-items-center justify-content-center"

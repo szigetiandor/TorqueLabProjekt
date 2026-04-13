@@ -125,22 +125,21 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
 
       alert("Sikeres mentés!");
     } catch (err: any) {
-      // --- MAGYARNYELVŰ HIBAKEZELÉS (Lajikus szemmel) ---
+
       let errorMsg = err.message;
 
-      // Alvázszám / Email ütközés
       if (errorMsg.includes("vin") && (errorMsg.includes("Duplicate") || errorMsg.includes("unique"))) {
         errorMsg = "Ez az alvázszám már szerepel a rendszerben! Kérlek, ellenőrizd az adatokat.";
       } else if (errorMsg.includes("email") && (errorMsg.includes("Duplicate") || errorMsg.includes("unique"))) {
         errorMsg = "Ez az email cím már foglalt. Kérlek, használj másikat.";
       } 
-      // Kilométeróra hibák
+
       else if (errorMsg.includes("mileage is required")) {
         errorMsg = "A kilométeróra állás megadása kötelező!";
       } else if (errorMsg.includes("mileage") && (errorMsg.includes("too large") || errorMsg.includes("overflow"))) {
         errorMsg = "A megadott kilométer érték irreálisan magas!";
       }
-      // Kapcsolati (Foreign Key) hibák - A legfontosabb rész:
+
       else if (errorMsg.includes("FK__service_l__perfo")) {
         errorMsg = "A megadott Munkavégző (Szerelő) ID nem létezik! Csak regisztrált felhasználó ID-ját adhatod meg.";
       } else if (errorMsg.includes("owner_id") && errorMsg.includes("FOREIGN KEY")) {
@@ -148,7 +147,7 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
       } else if (errorMsg.includes("car_id") && errorMsg.includes("FOREIGN KEY")) {
         errorMsg = "A megadott Autó belső ID nem létezik a rendszerben.";
       }
-      // Általános hálózati vagy szerver hiba
+
       else if (errorMsg.includes("Failed to fetch") || errorMsg.includes("NetworkError")) {
         errorMsg = "Nincs kapcsolat a szerverrel. Kérlek, ellenőrizd az internetet!";
       } else {
@@ -181,24 +180,22 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
   };
 
   const openEdit = (item: any) => {
-    // Készítünk egy tiszta másolatot az objektumról
+
     let preparedData = { ...item };
 
     console.log("item:")
     console.log(JSON.stringify(item))
 
-    // Speciális kezelés a naplókhoz (logs)
+
     if (activeView === 'logs') {
-      // Dátum formázása: YYYY-MM-DD (az input[type="date"] csak ezt eszi meg)
+
       if (item.service_date) {
         preparedData.service_date = formatDateForInput(item.service_date);
       }
-      
-      // Biztosítjuk a státuszt (ha a DB-ben kicsi/nagybetű eltérés lenne)
-      // A select option-ökben: "Pending", "In Progress", stb. szerepelnek
+
       preparedData.status = item.status || 'Pending';
 
-      // Betöltjük a hozzátartozó kommenteket
+
       fetchComments(getItemId(item));
     }
 
@@ -206,7 +203,7 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
       preparedData.password = ''; // Biztonság: jelszót sosem töltünk be
     }
 
-    // Beállítjuk a szerkesztendő elemet és a form adatait
+
     setEditingItem(item);
     setFormData(preparedData); 
     setShowModal(true);
@@ -215,7 +212,7 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
   return (
     <div className="container-fluid g-0 d-flex" style={{ marginTop: '80px', minHeight: '100vh' }}>
       
-      {/* OLDALSÁV */}
+
       <div className="bg-dark border-end border-secondary p-3 shadow" style={{ width: '260px' }}>
         <div className="mb-4 px-2">
             <h6 className="text-danger fw-bold text-uppercase m-0 font-monospace">TorqueLab Admin</h6>
@@ -238,7 +235,7 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
         </div>
       </div>
 
-      {/* TARTALOM TERÜLET */}
+
       <div className="flex-grow-1 p-4 bg-black text-white">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="fw-bold m-0 text-capitalize">
@@ -292,7 +289,7 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
         )}
       </div>
 
-      {/* ADATSZERKESZTŐ MODAL */}
+
       {showModal && (
         <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -369,15 +366,15 @@ export default function AdminClientContent({ initialUser }: { initialUser: any }
       <textarea className="form-control bg-black text-white border-secondary" rows={2} value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} required />
     </div>
 
-    {/* KOMMENT SZEKCIÓ - Csak szerkesztésnél látszik */}
+
     {editingItem && (
       <div className="col-12 mt-4 border-top border-secondary pt-3">
         <h6 className="text-danger fw-bold text-uppercase small mb-3">Belső Megjegyzések</h6>
         
-        {/* Itt használjuk az új komponenst az olvasáshoz */}
+  
         <ServiceComments key={`comments-${getItemId(editingItem)}-${commentRefreshKey}`} serviceId={getItemId(editingItem)} />
 
-        {/* Beküldő mező az adminnak */}
+
         <div className="input-group input-group-sm mt-3">
           <input 
             type="text" 

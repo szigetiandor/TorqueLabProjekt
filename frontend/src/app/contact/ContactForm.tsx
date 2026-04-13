@@ -7,7 +7,6 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Itt küldhetnénk az adatokat az Express backendnek
     setSent(true);
   };
 
