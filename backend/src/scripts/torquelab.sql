@@ -1,3 +1,5 @@
+USE MASTER;
+
 IF DB_ID('TorqueLab') IS NOT NULL
 
 BEGIN
@@ -109,11 +111,12 @@ INSERT INTO [user] (name, email, password_hash, is_admin) VALUES
 
 
 INSERT INTO car
-(vin, brand, model, production_year, engine, mileage, owner_id)
+(vin, brand, model, production_year, engine, mileage, owner_id, for_sale)
 VALUES
-('WF0AXXWPMAG123456', 'Ford', 'Focus', 2018, '1.5 EcoBoost', 85000, 1),
-('1FA6P8TH0J5102345', 'Ford', 'Mustang', 2020, '2.3 EcoBoost', 42000, 2),
-('WF0FXXGCDGJ987654', 'Ford', 'Fiesta', 2016, '1.0 EcoBoost', 120000, 1);
+('WF0AXXWPMAG123456', 'Ford', 'Focus', 2018, '1.5 EcoBoost', 85000, 1, 1),
+('1FA6P8TH0J5102345', 'Ford', 'Mustang', 2020, '2.3 EcoBoost', 42000, 2, 1),
+('WF0FXXGCDGJ987654', 'Ford', 'Fiesta', 2016, '1.0 EcoBoost', 120000, 1, 1),
+('WF0FXXGCDGJ987669', 'Ford', 'Fiesta Pro Max', 2016, '1.0 EcoBoost', 120000, 1, 0);
 
 INSERT INTO part
 (name, manufacturer, part_number, price, stock_quantity, description, category)
@@ -121,6 +124,7 @@ VALUES
 ('Oil Filter', 'Bosch', 'OF-1234', 4500.00, 30, 'Standard oil filter', 'Engine'),
 ('Brake Pad Set (Front)', 'Brembo', 'BP-FORD-01', 32000.00, 12, 'Front brake pads', 'Brakes'),
 ('Performance Air Filter', 'K&N', 'KN-33-2865', 18000.00, 5, 'High-flow air filter', 'Engine');
+
 INSERT INTO service_log
 (car_id, performed_by, service_date, description)
 VALUES
