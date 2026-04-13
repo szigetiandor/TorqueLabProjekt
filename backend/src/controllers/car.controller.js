@@ -70,8 +70,8 @@ exports.createCar = async (req, res) => {
  */
 exports.getAllCars = async (req, res) => {
   try {
-    const { model, type } = req.query;
-    const cars = await carService.getAllCars(model, type);
+    const { model, type, for_sale } = req.query;
+    const cars = await carService.getAllCars(model, type, for_sale);
     res.json(cars);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -36,7 +36,7 @@ class Car {
  * @param {string} [typeFilter] - Szűrés felépítmény típusra.
  * @returns {Promise<Car[]>} Car objektumok tömbje.
  */
-exports.findAll = async (modelFilter, typeFilter) => {
+exports.findAll = async (modelFilter, typeFilter, forSaleFilter) => {
   const pool = await getPool();
   const request = pool.request();
   let sql = "SELECT * FROM car WHERE 1=1";
@@ -48,6 +48,10 @@ exports.findAll = async (modelFilter, typeFilter) => {
   if (typeFilter) {
     request.input("type", typeFilter);
     sql += " AND build_type = @type";
+  }
+  if (forSaleFilter) {
+    request.input("for_sale", forSaleFilter);
+    sql += " AND for_sale = @for_sale"
   }
 
   const result = await request.query(sql);

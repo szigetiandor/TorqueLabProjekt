@@ -22,8 +22,8 @@ exports.createCar = async (data) => {
  * @param {string} [typeFilter] - Felépítmény típus szerinti szűrés.
  * @returns {Promise<Array>} A szűrt autók listája.
  */
-exports.getAllCars = async (modelFilter, typeFilter) => {
-  return await carModel.findAll(modelFilter, typeFilter);
+exports.getAllCars = async (modelFilter, typeFilter, forSaleFilter) => {
+  return await carModel.findAll(modelFilter, typeFilter, forSaleFilter);
 };
 
 /**
