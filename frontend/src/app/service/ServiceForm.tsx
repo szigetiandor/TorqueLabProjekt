@@ -77,29 +77,24 @@ export default function ServiceForm() {
     setLoading(true);
     setError(null);
 
+    let carId = null;
     let createdServiceId: number | null = null;
 
     try {
-      let carId = null;
       const vinUpper = formData.vin.toUpperCase();
 
-      // 1. ELLENŐRZÉS: Próbáljuk lekérni az autót VIN alapján
+      // 1. LÉPÉS: Autó megkeresése vagy létrehozása
       try {
+        console.log("Autó keresése VIN alapján...");
         const existingCar = await apiRequest(`/cars/vin/${vinUpper}`);
 
-        // Ha ide elér a kód, az autó létezik (mert nem dobott 404-et az apiRequest)
-        if (existingCar && (existingCar.is_owner || existingCar.user_id === existingCar.current_user_id)) {
-          carId = existingCar.car_id;
-          console.log("Meglévő saját autó használata:", carId);
-        } else {
-          // Ha létezik, de nem a felhasználóé
-          throw new Error('Ez a jármű már regisztrálva van egy másik felhasználóhoz!');
-        }
+        // Ha az apiRequest nem dobott hibát, az autó megvan
+        carId = existingCar.car_id;
+        console.log("Létező autó azonosítva:", carId);
       } catch (err: any) {
-        // Ha 404-es hibát kaptunk (nem létezik az autó), akkor létrehozzuk
-        if (err.status === 404 || err.message?.includes('404')) {
+        // Megnézzük, hogy a hiba azért van-e, mert nem található (404)
+        if (err.message.includes('404') || err.message.toLowerCase().includes('nem található')) {
           console.log("Az autó nem létezik, új létrehozása...");
-
           const newCar = await apiRequest('/cars', {
             method: 'POST',
             body: JSON.stringify({
@@ -113,17 +108,18 @@ export default function ServiceForm() {
               price: 0
             }),
           });
-
           carId = newCar.car_id;
+          console.log("Új autó sikeresen létrehozva:", carId);
         } else {
-          // Ha egyéb hiba történt (pl. 500-as szerverhiba), azt továbbdobjuk a külső catch-nek
-          console.error("Váratlan hiba az autó ellenőrzésekor:", err);
-          throw err;
+          // Ha nem 404-es hiba (pl. hálózati hiba vagy 500), akkor leállítjuk a folyamatot
+          throw new Error(`Hiba az autó ellenőrzésekor: ${err.message}`);
         }
       }
 
-      // 2. SZERVIZNAPLÓ LÉTREHOZÁSA
-      // Mivel az apiRequest már az adatot adja, a serviceData maga a válasz objektum
+      if (!carId) throw new Error("A gépjármű azonosítása sikertelen.");
+
+      // 2. LÉPÉS: Szerviznapló létrehozása
+      console.log("Szerviznapló létrehozása...");
       const serviceData = await apiRequest('/service-logs', {
         method: 'POST',
         body: JSON.stringify({
@@ -134,10 +130,12 @@ export default function ServiceForm() {
       });
 
       createdServiceId = serviceData.service_id;
+      console.log("Szerviznapló létrehozva, ID:", createdServiceId);
 
-      // 3. TUNING ALKATRÉSZEK RÖGZÍTÉSE
+      // 3. LÉPÉS: Alkatrészek csatolása és "visszagörgetés" hiba esetén
       if (formData.service_type === 'tuning' && selectedParts.length > 0) {
         try {
+          console.log("Alkatrészek rögzítése...");
           const partPromises = selectedParts.map(partId => {
             const partInfo = availableParts.find(p => p.part_id === partId);
             return apiRequest('/service-parts', {
@@ -151,24 +149,24 @@ export default function ServiceForm() {
             });
           });
 
-          // Megvárjuk az összes alkatrész rögzítését
           await Promise.all(partPromises);
+          console.log("Minden alkatrész sikeresen rögzítve.");
         } catch (partErr: any) {
-          // KRITIKUS: Ha az alkatrész rögzítése elbukik (pl. stock hiba), 
-          // töröljük a már létrehozott szerviznaplót is!
+          // Ha bármelyik alkatrész rögzítése nem sikerül:
+          console.error("Alkatrész rögzítési hiba, szerviznapló törlése...");
           if (createdServiceId) {
+            // Kitöröljük a félkész szerviznaplót, hogy ne maradjon szemét az adatbázisban
             await apiRequest(`/service-logs/${createdServiceId}`, { method: 'DELETE' });
           }
-          // Továbbdobjuk a hibát a külső catch-nek
-          throw new Error(`Alkatrész hiba: ${partErr.message}. A foglalás megszakítva.`);
+          throw new Error(`Alkatrész hiba: ${partErr.message}. A foglalás megsemmisítve.`);
         }
       }
 
+      // Ha minden sikerült
       setSuccess(true);
     } catch (err: any) {
-      // Itt jelenik meg minden hiba (saját dobott hiba vagy apiRequest hiba)
-      console.error("Hiba a folyamat során:", err);
-      setError(err.message || "Valami hiba történt az igénylés során.");
+      console.error("A folyamat megszakadt:", err.message);
+      setError(err.message || "Váratlan hiba történt.");
     } finally {
       setLoading(false);
     }
