@@ -30,12 +30,12 @@
     color: #aaaaaa;
     text-decoration: none;
     transition: all 0.3s ease;
-    display: inline-block; /* Fontos az animációhoz */
+    display: inline-block; 
 }
 
 .footerLink:hover {
     color: #dc3545;
-    transform: scale(1.05); /* Elmozdulás helyett enyhe nagyítás a szimmetria megőrzéséért */
+    transform: scale(1.05); 
 }
 
 .vonal {

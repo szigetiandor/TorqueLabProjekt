@@ -2,7 +2,7 @@ import Link from 'next/link';
 import styles from './ProductCard.module.css';
 import { getImageUrl } from '@/lib/api';
 
-// Az SQL tábládhoz igazított interface
+
 export interface Product {
   part_id: number;
   name: string;
@@ -11,7 +11,7 @@ export interface Product {
   price: number;
   stock_quantity: number;
   description: string;
-  image_filename: string; // Ha később lesz kép az adatbázisban
+  image_filename: string; 
 }
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -31,8 +31,6 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className={styles.imageContainer}>
-        {/* Mivel a getImageUrl már alapból ad vissza valamit, 
-            itt eldöntheted, hogy mindig megmutatod-e a képet */} 
         <div 
           className={styles.actualImage} 
           style={{ backgroundImage: `url(${productImageUrl})` }} 

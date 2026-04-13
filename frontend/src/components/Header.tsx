@@ -10,7 +10,7 @@ async function getMe() {
   if (!token) return null;
 
   try {
-    // A verify-login végpontot hívjuk meg a hitelesítéshez
+
     const res = await fetch(`${API_URL}/auth/verify-login`, {
       method: 'POST', 
       headers: { 
@@ -23,7 +23,7 @@ async function getMe() {
     if (!res.ok) return null;
     const data = await res.json();
     
-    // futas kozben a terminalon latjuk az adatokat
+  
     console.log("Bejelentkezett felhasználó a Headerben:", data.user);
     
     return data.user; 

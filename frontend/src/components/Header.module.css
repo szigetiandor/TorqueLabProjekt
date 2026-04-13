@@ -79,7 +79,6 @@
     text-shadow: 0 0 8px rgba(220, 53, 69, 0.4);
 }
 
-/* DROPDOWN LOGIKA - CSAK KATTINTÁSRA */
 .dropdownContainer {
     position: static !important;
     display: flex;
@@ -102,7 +101,7 @@
     box-shadow: 0 20px 40px rgba(0,0,0,0.8);
 }
 
-/* Ez az osztály vezérli a láthatóságot, amit a React rak rá */
+
 .dropdownMenuCustom.show {
     display: block;
     animation: slideFadeIn 0.2s ease-out;
