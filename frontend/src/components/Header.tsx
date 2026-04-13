@@ -23,7 +23,7 @@ async function getMe() {
     if (!res.ok) return null;
     const data = await res.json();
     
-    // Debug: Nézd meg a terminált futtatás közben, itt látod majd az adatokat!
+    // futas kozben a terminalon latjuk az adatokat
     console.log("Bejelentkezett felhasználó a Headerben:", data.user);
     
     return data.user; 
