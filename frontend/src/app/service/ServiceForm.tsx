@@ -255,7 +255,7 @@ export default function ServiceForm() {
                       price: part.price,
                       stock_quantity: part.stock_quantity || 0,
                       description: part.description || '',
-                      image: part.image
+                      image_filename: part.image_filename
                     };
 
                     const isSelected = selectedParts.includes(part.part_id);

@@ -19,6 +19,8 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const inStock = product.stock_quantity > 0;
 
+  console.log(product)
+
   const productImageUrl = getImageUrl(product.image_filename);
 
   return (
